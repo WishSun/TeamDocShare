@@ -29,7 +29,7 @@ private:
     void FreeConn(MYSQL *pMysql);       /* 归还一个数据库连接*/
 
 public:
-    GroupManage* CreateGroupManage();   /* 获取群组管理类单例对象*/
+    static GroupManage* CreateGroupManage();   /* 获取群组管理类单例对象*/
 
     bool AddNewGroup(GroupInfo *pG);    /* 增加一个新的组*/
     GroupInfo* GetGroupList();          /* 查找所有群组信息*/

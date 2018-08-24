@@ -11,7 +11,7 @@
 /*----------------------------public----------------------------*/
 
 /* 任务线程构造函数*/
-TaskThread::TaskThread( bool isBig, UserManage *pUM, GroupManage *pGM )
+TaskThread::TaskThread( int epollFd, int maxLength, UserManage *pUM, GroupManage *pGM )
 {
 
 }

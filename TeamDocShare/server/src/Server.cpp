@@ -15,6 +15,10 @@
 #include <sys/epoll.h>
 #include <time.h>
 
+/* 最大描述符*/
+#define MAX_FD 65536
+
+/* 最大监听事件数*/
 #define MAX_EVENT_NUMBER 10000
 
 
@@ -29,6 +33,12 @@ void setSocketTimeout( int fd )
     setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(struct timeval));
     /* 设置接收超时*/
     setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(struct timeval));
+}
+
+/* 设置描述符非阻塞*/
+void setSocketNoneblocking( int fd )
+{
+    
 }
 
 /*-----------------------private-----------------------*/
@@ -135,6 +145,13 @@ Server::~Server()
 
 }
 
+struct UserRequest
+{
+    Protocol  prot;
+    int haveRecv;
+    int needRecv;
+    UserRequest(): haveRecv(0),needRecv(-1){}
+};
 
  /* 运行服务器程序*/
 void Server::Run()
@@ -148,7 +165,12 @@ void Server::Run()
         exit(1);
     }
 
+    /* 创建线程池对象*/
+    m_pMyThreadpool = MyThreadPool::CreateMyThreadPool(m_epollFd);
+
     epoll_event  events[ MAX_EVENT_NUMBER ];
+    UserRequest *pUsersReqest = new UserRequest[ MAX_FD ];
+
 
     while( true )
     {
@@ -168,17 +190,68 @@ void Server::Run()
             if( sockfd == m_listenFd )
             {
                 printf("有新连接到来\n\n");
+                struct sockaddr_in client_address;
+                socklen_t client_addrlength = sizeof( client_address );
+                int connfd = accept( m_listenFd, (struct sockaddr*)&client_address, &client_addrlength );
+                if( connfd < 0 )
+                {
+                    perror("accept");
+                    continue;
+                }
+
+                /* 将新连接添加到epoll集合，并将其设置为非阻塞*/
+                EpollAdd( connfd, true );
             }
+
             /* 客户端有数据到来*/
             else if( events[i].events & EPOLLIN )
             {
-                
+                int sockfd = events[i].data.fd;
+                if( pUsersReqest[ sockfd ].needRecv == -1 )
+                {
+                    pUsersReqest[ sockfd ].haveRecv = 0;
+                    pUsersReqest[ sockfd ].needRecv = sizeof(Protocol);
+                }
+
+                int ret = read( sockfd, &pUsersReqest[ sockfd ].prot, pUsersReqest[ sockfd ].needRecv );
+                if( ret == -1 || ret == 0 )
+                {
+                    close( sockfd );
+                    pUsersReqest[ sockfd ].haveRecv = 0;
+                    pUsersReqest[ sockfd ].needRecv = -1;
+                    continue;
+                }
+
+                pUsersReqest[ sockfd ].haveRecv += ret;
+                pUsersReqest[ sockfd ].needRecv -= ret;
+
+                /* 请求包已接收完毕*/
+                if( pUsersReqest[ sockfd ].haveRecv == sizeof(Protocol) )
+                {
+                    pUsersReqest[ sockfd ].haveRecv = 0;
+                    pUsersReqest[ sockfd ].needRecv = -1;
+
+                    /* 将描述符从epoll集合中去除，等任务执行完毕后再将其放回*/
+                    EpollDel( sockfd );
+
+                    /* 将协议包作为新任务添加到线程池*/
+                    m_pMyThreadpool->AppendTaskToPool( pUsersReqest[ sockfd ].prot );
+                }
             }
+
+            /* 出现异常情况*/
             else if( events[i].events & ( EPOLLRDHUP | EPOLLHUP | EPOLLERR ) )
             {
-                
+                EpollDel( events[i].data.fd );
+                close( events[i].data.fd );
             }
         }
     }
+
+    delete m_pMyThreadpool;
+    m_pMyThreadpool = NULL;
+
+    delete[] pUsersReqest;
+    pUsersReqest = NULL;
 }
 

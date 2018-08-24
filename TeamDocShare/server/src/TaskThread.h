@@ -35,7 +35,7 @@ private:
     pthread_t    m_tid;     /* 线程id*/
 
 public:
-    TaskThread( bool isBig, UserManage *pUM, GroupManage *pGM ); /* 任务线程构造函数*/
+    TaskThread( int epollFd, int maxLength, UserManage *pUM, GroupManage *pGM ); /* 任务线程构造函数*/
     ~TaskThread();         /* 任务线程析构函数*/
 
     int GetFreeNum();      /* 获取当前空闲任务链表可插入任务结点数*/

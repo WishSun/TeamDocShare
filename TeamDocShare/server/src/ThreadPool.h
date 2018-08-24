@@ -15,27 +15,26 @@
 #include <vector>
 using namespace std;
 
+
 class ThreadPool
 {
 private:
     static ThreadPool *m_pBigTaskPool;    /* 大任务线程池单例对象*/
     static ThreadPool *m_pSmallTaskPool;  /* 小任务线程池单例对象*/
 
-    int m_bigThrNum;    /* 大任务线程个数*/
-    int m_smaThrNum;    /* 小任务线程个数*/
-
-    vector<TaskThread*> *m_pBigThreads;   /* 大任务线程数组*/
-    vector<TaskThread*> *m_pSmaThreads;   /* 小任务线程数组*/
+    vector<TaskThread*> m_pBigThreads;   /* 大任务线程数组*/
+    vector<TaskThread*> m_pSmaThreads;   /* 小任务线程数组*/
 
     UserManage   *m_pUM;  /* 用户管理类对象单例指针*/
     GroupManage  *m_pGM;  /* 群组管理类对象单例指针*/
 
 private:
-    ThreadPool( bool isBig, int thrNum ); /* 线程池构造函数*/
+    ThreadPool( int epollFd, bool isBig );/* 线程池构造函数*/
 public:
     ~ThreadPool();                        /* 线程池析构函数*/
-    static ThreadPool* CreateBigThreadPool();  /* 创建大任务线程池单例对象*/
-    static ThreadPool* CreateSmallThreadPool();/* 创建小任务线程池单例对象*/
+
+    static ThreadPool* CreateBigThreadPool(int epollFd);  /* 创建大任务线程池单例对象*/
+    static ThreadPool* CreateSmallThreadPool(int epollFd);/* 创建小任务线程池单例对象*/
 
     bool AppendTask(Task *pTask);         /* 想线程池中添加任务*/
 

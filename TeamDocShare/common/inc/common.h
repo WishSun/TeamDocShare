@@ -60,6 +60,7 @@ struct Protocol
     char    m_userName[ NAME_LENGTH ];   /* 用户名*/
     int     m_groupID;      /* 用户所属ID*/
     char    m_fileMD5;      /* 文件的MD5码*/
+    char    m_filePath[ PATH_LENGTH ];   /* 文件路径*/
     int64_t m_contentLength;/* 协议包后边的数据实体字节数*/
     int64_t m_haveProcessLength;  /* 已处理的大小字节数*/
 

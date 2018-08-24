@@ -11,7 +11,71 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <errno.h>
 
+/*-----------------------------非成员函数-----------------------------*/
+
+/* 错误处理*/
+void PerrExit(const char *s)
+{
+    perror(s);
+    exit(1);
+}
+
+/* 向套接字发送buf中指定字节数的数据*/
+bool SendData( int sockFd, char *buf, int size )
+{
+    int needSend = size;
+    int haveSend = 0;
+
+    int ret = 0;
+    while( needSend > 0 )
+    {
+        ret = send( sockFd, buf + haveSend, needSend, 0);
+        if( ret < -1 )
+        {
+            if( errno == EAGAIN )
+            {
+                continue;
+            }
+            return false;
+        }
+        needSend -= ret;
+        haveSend += ret;
+    }
+
+    return true;
+}
+
+/* 从套接字描述符中接收指定字节数的数据到buf*/
+bool RecvData( int sockFd, char *buf, int size )
+{
+    int needRecv = size;
+    int haveRecv = 0;
+
+    int ret = 0;
+    while( needRecv > 0 )
+    {
+        ret = recv( sockFd, buf + haveRecv, needRecv, 0);
+        if( ret < -1 )
+        {
+            if( errno == EAGAIN )
+            {
+                continue;
+            }
+            return false;
+        }
+        if( ret == 0 )
+        {
+            printf("服务器断开连接!\n");
+            exit(1);
+        }
+        needRecv -= ret;
+        haveRecv += ret;
+    }
+
+    return true;  
+}
 
 /*-------------------------------private-------------------------------*/
 
@@ -52,13 +116,53 @@ void Client::PrintLoginRegisterUI()
 /* 验证登录*/
 bool Client::CheckLogin()
 {
+    memset(&m_prot, 0x00, sizeof(m_prot));
+    m_prot.m_PType = PTYPE_LOGIN;
+    m_prot.m_contentLength = strlen(m_pwd);
+    strcpy(m_prot.m_userName, m_userName);
     
+    int ret = -1;
+    int needToSend = sizeof(sizeof(m_prot));
+
+    /* 发送登录请求包*/
+    if( ! SendData(m_sockFd, (char *)&m_prot, sizeof(m_prot)) )
+    {
+        PerrExit("send");
+    }
+    printf("登录请求已发送\n\n");
+   
+    /* 发送密码信息*/
+    if( ! SendData(m_sockFd, m_pwd, strlen(m_pwd)) )
+    {
+        PerrExit("recv");
+    }
+    printf("密码信息已发送\n\n");
+
+    /* 接收服务端对登录请求的响应包*/
+    if( ! RecvData(m_sockFd, (char *)&m_prot, sizeof(m_prot)) )
+    {
+        PerrExit("recv");
+    }
+    printf("已接收到服务端响应\n");
+
+    if( m_prot.m_PType == PTYPE_TRUE )
+    {
+        printf("登录成功\n");
+        return true;
+    }
+    else
+    {
+        printf("登录失败\n");
+        return false;
+    }
 }
 
 
 /* 验证注册*/
 bool Client::CheckRegister()
 {
+    memset(&m_prot, 0x00, sizeof(m_prot));
+    m_prot.m_PType = PTYPE_REGISTER;
     
 }
 
@@ -73,7 +177,16 @@ void Client::StartAutoUpload()
 /* 打印功能界面*/
 void Client::PrintFunctionUI()      
 {
-    
+    printf("------------------------------功能界面------------------------------\n\n");
+    printf("\t\t1. 获取团队文件列表\n");
+    printf("\t\t2. 拉取团队文件到本地\n");
+    printf("\t\t3. 获取所有组信息\n");
+    printf("\t\t4. 获取用户所属组信息\n");
+    printf("\t\t5. 修改用户所属组\n");
+    printf("\t\t6. 创建新的组\n");
+    printf("--------------------------------------------------------------------\n\n");
+
+    printf("请选择功能编号: ");
 }
 
 
@@ -152,7 +265,35 @@ void Client::Run()
     {
         return;
     }
-    printf("连接服务器成功\n");
-    PrintLoginRegisterUI();
+
+    int funNo = 0;   /* 选择功能编号*/
+    bool haveLogin = false;
+
+    while( ! haveLogin )
+    {
+        PrintLoginRegisterUI();
+
+        scanf("%d", &funNo);
+        switch(funNo)
+        {
+            case 1:
+            {
+                haveLogin = CheckLogin();
+                break;
+            }
+            case 2:
+            {
+                haveLogin = CheckRegister();
+                break;
+            }
+            default:
+            {
+                printf("输入编号有误，请重新确认后，再次输入...\n\n");
+                break;
+            }
+        }
+    }
+
+    PrintFunctionUI();
 }
 
