@@ -7,7 +7,7 @@
 
 #ifndef _CLIENT_H
 #define _CLIENT_H
-#include "../../common/common.h"
+#include "../../common/inc/common.h"
 #include "./AutoUpload.h"
 
 class Client

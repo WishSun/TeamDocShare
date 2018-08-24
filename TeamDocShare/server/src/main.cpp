@@ -1,8 +1,15 @@
 /*************************************************************************
-	> File Name: Thread.cpp
+	> File Name: main.cpp
 	> Author: WishSun
 	> Mail: WishSun_Cn@163.com
-	> Created Time: 2018年08月23日 星期四 16时29分05秒
+	> Created Time: 2018年08月23日 星期四 21时36分43秒
  ************************************************************************/
-#include "./Thread.h"
 
+#include <stdio.h>
+#include "./Server.h"
+using namespace std;
+
+int main(void)
+{
+    return 0;
+}

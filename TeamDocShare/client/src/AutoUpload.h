@@ -9,16 +9,16 @@
 #define _AUTOUPLOAD_H
 
 #include <queue>
-#include "../../common/common.h"
-#include "./Thread.h"
+#include "../../common/inc/common.h"
+#include "./UploadTask.h"
 
 
 class AutoUpload
 {
 private:
-    queue<char[ PATH_LENGTH ]> m_uploadQueue;   /* 文件上传队列*/
-    Thread  m_scanThread;      /* 浏览目录线程*/
-    Thread  m_uploadThread;    /* 上传文件线程*/
+    queue< UploadTask*> m_uploadQueue;   /* 文件上传队列*/
+    pthread_t  m_scanThread;      /* 浏览目录线程*/
+    pthread_t  m_uploadThread;    /* 上传文件线程*/
     Mutex   m_mutex;           /* 互斥锁*/
     Cond    m_cond;            /* 条件变量*/
 

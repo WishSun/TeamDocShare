@@ -11,6 +11,7 @@
 #include <exception>
 #include <pthread.h>
 #include <semaphore.h>
+#include "./parseCfg.h"
 
 using namespace std;
 
@@ -28,6 +29,9 @@ using namespace std;
 
 /* 信息长度, 包括错误信息以及群组简介*/
 #define TEXT_LENGTH 1024
+
+/* IP地址长度*/
+#define IP_LENGTH 16
 
 typedef void*(* handle_t )(void*);
 
