@@ -25,12 +25,12 @@ private:
 
 private:
     Server(char *ip, int port);       /* 构造函数*/
-    void CreateSocket();    /* 创建监听socket并绑定地址和端口*/
-    void CreateEpoll();     /* 创建epoll事件监听集合，并将监听socket添加到epoll事件监听集合*/
-    void EpollAdd(int fd);  /* 将指定描述符添加到epoll事件监听集合*/
+    bool CreateSocket();    /* 创建监听socket并绑定地址和端口*/
+    bool CreateEpoll();     /* 创建epoll事件监听集合，并将监听socket添加到epoll事件监听集合*/
+    void EpollAdd(int fd, bool timeout);  /* 将指定描述符添加到epoll事件监听集合*/
     void EpollDel(int fd);  /* 将指定描述符从epoll监听集合中删除*/
 public:
-    static Server* CreateServer();    /* 创建服务器类单例对象并返回*/
+    static Server* CreateServer(char *ip, int port);    /* 创建服务器类单例对象并返回*/
     ~Server();                        /* 析构函数*/
     void Run();                       /* 运行服务器程序*/
 };

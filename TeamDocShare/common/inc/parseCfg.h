@@ -8,6 +8,7 @@
 /* 解析程序配置文件-----------------------------------------*/
 #ifndef _PARSE_CONFIGURE_FILE_H
 #define _PARSE_CONFIGURE_FILE_H
+#include <libconfig.h>
 
 /* 单值类型枚举声明*/
 enum __value_type_t
