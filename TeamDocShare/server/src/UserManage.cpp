@@ -6,27 +6,56 @@
  ************************************************************************/
 
 #include "./UserManage.h"
+#include <assert.h>
 
+#define INIT_NUM  20
+#define MAX_NUM   100
 
 /*----------------------------------private----------------------------------*/
 /* 用户管理类构造函数*/
 UserManage::UserManage(int initNum, int maxNum)
 {
+    MYSQL *p_mysql = NULL;
 
+    for(int i = 0; i < initNum; i++)
+    {
+        p_mysql = mysql_init(NULL);   
+        assert( p_mysql == NULL );
+
+        /* 连接数据库服务器*/
+        assert(mysql_real_connect(p_mysql, "127.0.0.1", "root", "123456", NULL, 0, NULL, 0) == NULL);
+
+        /* 选择数据库*/
+        assert(mysql_select_db(p_mysql, "TeamDocShare") != 0 );
+
+        /* 数据库连接句柄添加到连接队列*/
+        m_connQue.push(p_mysql);
+    }
 }
 
 
 /* 从数据库连接队列申请一个连接*/
 MYSQL* UserManage::AllocConn()
 {
+    m_mutex.lock();
 
+    MYSQL* p_mysql = m_connQue.front();
+    m_connQue.pop();
+
+    m_mutex.unlock();
+
+    return p_mysql;
 }
 
 
 /* 将一条数据库连接归还队列*/ 
 void UserManage::FreeConn(MYSQL *pMysql)
 {
-    
+    m_mutex.lock();
+
+    m_connQue.push(pMysql);
+
+    m_mutex.unlock();
 }
 
 
@@ -35,14 +64,50 @@ void UserManage::FreeConn(MYSQL *pMysql)
 /* 创建单例对象*/
 UserManage* UserManage::CreateUserManage()
 {
-    
+    if(m_pUM == NULL)
+    {
+        m_pUM = new UserManage(INIT_NUM, MAX_NUM);
+    }
+
+    return m_pUM;
+}
+
+
+/* 析构函数*/
+UserManage::~UserManage()
+{
+    /* 释放所有数据库连接*/
+    while( !m_connQue.empty() )
+    {
+        MYSQL* p_mysql = m_connQue.front();
+        mysql_close(p_mysql);
+        m_connQue.pop();
+    }
 }
 
 
 /* 查看某用户是否存在*/
 bool UserManage::FindUser(UserInfo *pUser)
 {
-    
+    char sql[1024] = {0};
+
+    /* 获取一条数据库连接*/
+    MYSQL *p_mysql = AllocConn();
+
+    sprintf(sql, "select groupID from userInfo where userName='%s' and userPassword='%s';", pUser->m_userName, pUser->m_userPwd);
+
+    /* 执行sql语句*/
+    if( mysql_query(p_mysql, sql) != 0 )
+    {
+        return false;
+    }
+
+    /* 获取执行结果集*/
+    MYSQL_RES *p_res = mysql_store_result(p_mysql);
+    if( p_res == NULL )
+    {
+        return false;
+    }
 }
 
 

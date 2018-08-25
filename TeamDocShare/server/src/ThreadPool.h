@@ -22,11 +22,10 @@ private:
     static ThreadPool *m_pBigTaskPool;    /* 大任务线程池单例对象*/
     static ThreadPool *m_pSmallTaskPool;  /* 小任务线程池单例对象*/
 
+    bool m_isBig;
+
     vector<TaskThread*> m_pBigThreads;   /* 大任务线程数组*/
     vector<TaskThread*> m_pSmaThreads;   /* 小任务线程数组*/
-
-    UserManage   *m_pUM;  /* 用户管理类对象单例指针*/
-    GroupManage  *m_pGM;  /* 群组管理类对象单例指针*/
 
 private:
     ThreadPool( int epollFd, bool isBig );/* 线程池构造函数*/

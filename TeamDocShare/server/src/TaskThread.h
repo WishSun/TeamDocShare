@@ -10,8 +10,6 @@
 
 #include "../../common/inc/common.h"
 #include "./Task.h"
-#include "./UserManage.h"
-#include "./GroupManage.h"
 #include <list>
 using namespace std;
 
@@ -29,17 +27,18 @@ private:
     Cond    m_cond;         /* 条件变量*/
     Mutex   m_mutex;        /* 互斥量*/
 
-    UserManage  *m_pUM;     /* 用户管理类对象指针*/
-    GroupManage *m_pGM;     /* 群组管理类对象指针*/
-
     pthread_t    m_tid;     /* 线程id*/
+    int m_epollFd;          /* epoll监听集合句柄*/
+
+private:
+    void ExchangeList();    /* 交换两个链表的身份*/
 
 public:
-    TaskThread( int epollFd, int maxLength, UserManage *pUM, GroupManage *pGM ); /* 任务线程构造函数*/
+    TaskThread( int epollFd, int maxLength ); /* 任务线程构造函数*/
     ~TaskThread();         /* 任务线程析构函数*/
 
     int GetFreeNum();      /* 获取当前空闲任务链表可插入任务结点数*/
     void AddTaskToFree(Task *pTask);    /* 将一个新任务添加到空闲任务链表*/
-    void* Run(void *arg);  /* 任务线程的线程函数*/
+    static void* Run(void *arg);  /* 任务线程的线程函数*/
 };
 #endif

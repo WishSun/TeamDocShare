@@ -32,6 +32,8 @@ private:
 public:
     static UserManage* CreateUserManage();/* 创建单例对象*/
 
+    ~UserManage();                      /* 析构函数*/
+
     bool FindUser(UserInfo *pUser);     /* 查看某用户是否存在*/
     bool AddNewUser(UserInfo *pUser);   /* 添加一个新用户记录*/
     bool DelUser(char *pName);          /* 删除一个用户记录*/

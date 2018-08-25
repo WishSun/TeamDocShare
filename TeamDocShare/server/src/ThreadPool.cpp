@@ -17,31 +17,26 @@
 
 /*----------------------------private----------------------------*/
 
-ThreadPool *ThreadPool::m_pBigTaskPool = NULL;
-ThreadPool *ThreadPool::m_pSmallTaskPool = NULL;
+ThreadPool* ThreadPool::m_pBigTaskPool = NULL;
+ThreadPool* ThreadPool::m_pSmallTaskPool = NULL;
 
 /* 线程池构造函数*/
-ThreadPool::ThreadPool( int epollFd, bool isBig )
+ThreadPool::ThreadPool( int epollFd, bool isBig ) 
 {
-    m_pUM = UserManage::CreateUserManage();
-    m_pGM = GroupManage::CreateGroupManage();
+    m_isBig = isBig;
 
-    if( isBig )
+    if( m_isBig )
     {
-        m_pSmallTaskPool = NULL;
-
         for(int i = 0; i < BIG_THR_NUM; i++)
         {
-            m_pBigThreads.push_back(new TaskThread(epollFd, BIG_THR_LIST_LENGTH, m_pUM, m_pGM));
+            m_pBigThreads.push_back(new TaskThread(epollFd, BIG_THR_LIST_LENGTH));
         }
     }
     else
     {
-        m_pBigTaskPool = NULL;
-
         for(int i = 0; i < SMA_THR_NUM; i++)
         {
-            m_pBigThreads.push_back(new TaskThread(epollFd, SMA_THR_LIST_LENGTH, m_pUM, m_pGM));
+            m_pSmaThreads.push_back(new TaskThread(epollFd, SMA_THR_LIST_LENGTH));
         }
     }
 }
@@ -83,6 +78,45 @@ ThreadPool* ThreadPool::CreateSmallThreadPool(int epollFd)
 /* 想线程池中添加任务*/
 bool ThreadPool::AppendTask(Task *pTask)
 {
-    
+    /* 挑出负载最轻的一个工作线程*/
+    int minLoad = 0;
+    if( m_isBig )
+    {
+        for(int i = 1; i < BIG_THR_NUM; i++)       
+        {
+            if( m_pBigThreads[i]->GetFreeNum() < m_pBigThreads[ minLoad ]->GetFreeNum() )
+            {
+                minLoad = i;
+            }
+        }
+
+        /* 所有工作线程都已满载*/
+        if( m_pBigThreads[ minLoad ]->GetFreeNum() >= BIG_THR_LIST_LENGTH )
+        {
+            return false;
+        }
+
+        m_pBigThreads[ minLoad ]->AddTaskToFree(pTask);
+        return true;
+    }
+    else
+    {
+        for(int i = 1; i < SMA_THR_NUM; i++)
+        {
+            if( m_pSmaThreads[i]->GetFreeNum() < m_pSmaThreads[ minLoad ]->GetFreeNum() )
+            {
+                minLoad = i;
+            }
+        }
+
+        /* 所有工作线程都已满载*/
+        if( m_pSmaThreads[ minLoad ]->GetFreeNum() <= 0 )
+        {
+            return false;
+        }
+
+        m_pSmaThreads[ minLoad ]->AddTaskToFree(pTask);
+        return true;
+    }
 }
 

@@ -130,14 +130,7 @@ bool Client::CheckLogin()
         PerrExit("send");
     }
     printf("登录请求已发送\n\n");
-   
-    /* 发送密码信息*/
-    if( ! SendData(m_sockFd, m_pwd, strlen(m_pwd)) )
-    {
-        PerrExit("recv");
-    }
-    printf("密码信息已发送\n\n");
-
+  
     /* 接收服务端对登录请求的响应包*/
     if( ! RecvData(m_sockFd, (char *)&m_prot, sizeof(m_prot)) )
     {

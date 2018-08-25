@@ -55,17 +55,15 @@ enum PTYPE
 struct Protocol
 {
     PTYPE   m_PType;        /* 请求类型*/
-    int     m_fileFd;       /* 文件描述符*/
     int     m_sockFd;       /* 客户端套接字描述符*/
     char    m_userName[ NAME_LENGTH ];   /* 用户名*/
     int     m_groupID;      /* 用户所属ID*/
-    char    m_fileMD5;      /* 文件的MD5码*/
+    char    m_fileMD5[ MD5_LENGTH ];     /* 文件的MD5码*/
     char    m_filePath[ PATH_LENGTH ];   /* 文件路径*/
     int64_t m_contentLength;/* 协议包后边的数据实体字节数*/
-    int64_t m_haveProcessLength;  /* 已处理的大小字节数*/
 
     Protocol()
-    : m_fileFd(-1), m_sockFd(-1), m_groupID(-1), m_contentLength(0), m_haveProcessLength(0)
+    : m_fileFd(-1), m_sockFd(-1), m_groupID(-1), m_contentLength(0)
     {}
 };
 

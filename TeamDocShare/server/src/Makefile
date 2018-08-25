@@ -5,7 +5,7 @@ BIN=./server
 $(BIN):$(OBJ)
 	g++ $^ -o $@  -L../../common/lib -lpthread -lparseCfg -lconfig -lmysqlclient 
 ./%.o:./%.cpp
-	g++ -c $< -o $@ -g 
+	g++ -c $< -o $@ -g -Wall
 
 .PHONY:clean
 clean:

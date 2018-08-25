@@ -47,6 +47,7 @@ bool MyThreadPool::AppendTaskToPool( Protocol& prot )
         case PTYPE_CHANGE_GROUP:         /* 更改所属组*/
         case PTYPE_CREATE_GROUP:         /* 创建新组*/
             {
+                pNewTask = new Task(prot);
                 return m_pSmaThrPool->AppendTask(pNewTask);
             }
 

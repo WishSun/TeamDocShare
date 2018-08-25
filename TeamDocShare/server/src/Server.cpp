@@ -13,7 +13,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <sys/epoll.h>
-#include <time.h>
+#include <errno.h>
 
 /* 最大描述符*/
 #define MAX_FD 65536
@@ -23,17 +23,6 @@
 
 
 /*----------------------非成员函数---------------------*/
-
-/* 设置描述符超时时间*/
-void setSocketTimeout( int fd )
-{
-    struct timeval timeout = {3, 0};
-
-    /* 设置发送超时*/
-    setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(struct timeval));
-    /* 设置接收超时*/
-    setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(struct timeval));
-}
 
 /* 设置描述符非阻塞*/
 void setSocketNoneblocking( int fd )
@@ -101,7 +90,7 @@ bool Server::CreateEpoll()
 
 
 /* 将指定描述符添加到epoll事件监听集合*/
-void Server::EpollAdd(int fd, bool timeout)
+void Server::EpollAdd(int fd, bool noneblock)
 {
     epoll_event event;
     event.data.fd = fd;
@@ -110,10 +99,9 @@ void Server::EpollAdd(int fd, bool timeout)
 
     epoll_ctl( m_epollFd, EPOLL_CTL_ADD, fd, &event );
 
-    if( timeout )
+    if( noneblock )
     {
-        /* 设置描述符超时时间*/
-        setSocketTimeout( fd );
+        setSocketNoneblocking( fd );
     }
 }
 
@@ -174,12 +162,14 @@ void Server::Run()
 
     while( true )
     {
-        printf("开始监听...\n");
         int num = epoll_wait( m_epollFd, events, MAX_EVENT_NUMBER, -1 ); 
         if( num < 0 )
         {
-            perror("epoll_wait");
-            exit(1);
+            if( errno != EINTR )
+            {
+                perror("epoll_wait");
+                exit(1);
+            }
         }
 
         for( int i = 0; i < num; i++ )
@@ -235,6 +225,7 @@ void Server::Run()
                     EpollDel( sockfd );
 
                     /* 将协议包作为新任务添加到线程池*/
+                    pUsersReqest[ sockfd ].prot.m_sockFd = sockfd;
                     m_pMyThreadpool->AppendTaskToPool( pUsersReqest[ sockfd ].prot );
                 }
             }
