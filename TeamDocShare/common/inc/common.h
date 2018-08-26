@@ -11,6 +11,8 @@
 #include <exception>
 #include <pthread.h>
 #include <semaphore.h>
+#include <fcntl.h>
+#include <sys/epoll.h>
 #include "./parseCfg.h"
 
 using namespace std;
@@ -63,7 +65,7 @@ struct Protocol
     int64_t m_contentLength;/* 协议包后边的数据实体字节数*/
 
     Protocol()
-    : m_fileFd(-1), m_sockFd(-1), m_groupID(-1), m_contentLength(0)
+    : m_sockFd(-1), m_groupID(-1), m_contentLength(0)
     {}
 };
 
@@ -73,6 +75,9 @@ struct UserInfo
     char m_userName[ NAME_LENGTH ];       /* 用户名*/
     char m_userPwd[ PWD_LENGTH ];         /* 密码*/
     int  m_groupID;                       /* 所属组ID*/
+
+    UserInfo():m_groupID(-1)
+    {}
 };
 
 /* 群组信息类*/
@@ -82,6 +87,37 @@ struct GroupInfo
     char m_groupName[ NAME_LENGTH ]; /* 群组名*/
     int  m_groupMemNum;              /* 群组成员数*/
     char m_groupInfo[ TEXT_LENGTH ]; /* 群组简介*/ 
+};
+
+
+/*公共函数类-----------------------------------------------------------*/
+
+struct Common
+{
+    /* 设置描述符非阻塞*/
+    static void setSocketNoneblocking( int fd )
+    {
+        int old_option = fcntl( fd, F_GETFL );
+        int new_option = old_option | O_NONBLOCK;
+        fcntl( fd, F_SETFL, new_option );
+    }
+
+
+    /* 将指定描述符添加到epoll事件监听集合*/
+    static void EpollAddCore(int epollFd, int fd, bool noneblock)
+    {
+        epoll_event event;
+        event.data.fd = fd;
+
+        event.events = EPOLLIN | EPOLLET | EPOLLRDHUP;
+
+        epoll_ctl( epollFd, EPOLL_CTL_ADD, fd, &event );
+
+        if( noneblock )
+        {
+            setSocketNoneblocking( fd );
+        }
+    }
 };
 
 /* 封装互斥锁的类------------------------------------------------------*/

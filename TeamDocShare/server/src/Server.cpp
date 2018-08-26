@@ -21,15 +21,6 @@
 /* 最大监听事件数*/
 #define MAX_EVENT_NUMBER 10000
 
-
-/*----------------------非成员函数---------------------*/
-
-/* 设置描述符非阻塞*/
-void setSocketNoneblocking( int fd )
-{
-    
-}
-
 /*-----------------------private-----------------------*/
 
 Server* Server::m_pServer = NULL;
@@ -92,17 +83,7 @@ bool Server::CreateEpoll()
 /* 将指定描述符添加到epoll事件监听集合*/
 void Server::EpollAdd(int fd, bool noneblock)
 {
-    epoll_event event;
-    event.data.fd = fd;
-
-    event.events = EPOLLIN | EPOLLET | EPOLLRDHUP;
-
-    epoll_ctl( m_epollFd, EPOLL_CTL_ADD, fd, &event );
-
-    if( noneblock )
-    {
-        setSocketNoneblocking( fd );
-    }
+    Common::EpollAddCore(m_epollFd, fd, noneblock);
 }
 
 
@@ -203,30 +184,43 @@ void Server::Run()
                     pUsersReqest[ sockfd ].needRecv = sizeof(Protocol);
                 }
 
-                int ret = read( sockfd, &pUsersReqest[ sockfd ].prot, pUsersReqest[ sockfd ].needRecv );
-                if( ret == -1 || ret == 0 )
+                while( true )
                 {
-                    close( sockfd );
-                    pUsersReqest[ sockfd ].haveRecv = 0;
-                    pUsersReqest[ sockfd ].needRecv = -1;
-                    continue;
-                }
+                    int ret = read( sockfd, (char *)&pUsersReqest[ sockfd ].prot + pUsersReqest[ sockfd ].haveRecv,
+                                   pUsersReqest[ sockfd ].needRecv );
 
-                pUsersReqest[ sockfd ].haveRecv += ret;
-                pUsersReqest[ sockfd ].needRecv -= ret;
+                    /* 如果读取数据出错*/
+                    if( (ret == -1 && errno != EAGAIN && errno != EWOULDBLOCK) || ret == 0)
+                    {
+                        close( sockfd );
+                        EpollDel( sockfd );
+                        pUsersReqest[ sockfd ].haveRecv = 0;
+                        pUsersReqest[ sockfd ].needRecv = -1;
+                        break;
+                    }
 
-                /* 请求包已接收完毕*/
-                if( pUsersReqest[ sockfd ].haveRecv == sizeof(Protocol) )
-                {
-                    pUsersReqest[ sockfd ].haveRecv = 0;
-                    pUsersReqest[ sockfd ].needRecv = -1;
+                    pUsersReqest[ sockfd ].haveRecv += ret;
+                    pUsersReqest[ sockfd ].needRecv -= ret;
 
-                    /* 将描述符从epoll集合中去除，等任务执行完毕后再将其放回*/
-                    EpollDel( sockfd );
+                    /* 请求包已接收完毕*/
+                    if( pUsersReqest[ sockfd ].haveRecv == sizeof(Protocol) )
+                    {
+                        pUsersReqest[ sockfd ].haveRecv = 0;
+                        pUsersReqest[ sockfd ].needRecv = -1;
 
-                    /* 将协议包作为新任务添加到线程池*/
-                    pUsersReqest[ sockfd ].prot.m_sockFd = sockfd;
-                    m_pMyThreadpool->AppendTaskToPool( pUsersReqest[ sockfd ].prot );
+                        /* 将描述符从epoll集合中去除，等任务执行完毕后再将其放回*/
+                        EpollDel( sockfd );
+
+                        /* 将协议包作为新任务添加到线程池*/
+                        pUsersReqest[ sockfd ].prot.m_sockFd = sockfd;
+                        m_pMyThreadpool->AppendTaskToPool( pUsersReqest[ sockfd ].prot );
+                        break;
+                    }
+
+                    if( ret == -1 && ( errno == EAGAIN || errno == EWOULDBLOCK ) )
+                    {
+                        break;
+                    }
                 }
             }
 

@@ -200,12 +200,12 @@ bool Task::ExecuteTask()
 /* 判断任务是否已完成*/
 bool Task::TaskIsFinish()
 {
-    
+    return m_isFinish;
 }
 
 
 /* 将完成任务的套接字描述符重新添加到epoll监听集合*/
 void Task::AddTaskFdToEpoll( int epollFd )
 {
-    
+    Common::EpollAddCore(epollFd, m_sockFd, true);   
 }

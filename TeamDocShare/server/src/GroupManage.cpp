@@ -9,6 +9,8 @@
 
 /*----------------------------------private----------------------------------*/
 
+GroupManage* GroupManage::m_pGM = NULL;
+
 /* 构造函数*/
 GroupManage::GroupManage(int initNum, int maxNum)   
 {
