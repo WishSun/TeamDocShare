@@ -11,8 +11,12 @@
 #include <exception>
 #include <pthread.h>
 #include <semaphore.h>
+#include <unistd.h>
 #include <fcntl.h>
+#include <sys/socket.h>
 #include <sys/epoll.h>
+#include <errno.h>
+#include <stdlib.h>
 #include "./parseCfg.h"
 
 using namespace std;
@@ -31,6 +35,9 @@ using namespace std;
 
 /* 信息长度, 包括错误信息以及群组简介*/
 #define TEXT_LENGTH 1024
+
+/* 套接字发送/接收数据长度*/
+#define SENDRECV_LENGTH 4096
 
 /* IP地址长度*/
 #define IP_LENGTH 16
@@ -62,6 +69,7 @@ struct Protocol
     int     m_groupID;      /* 用户所属ID*/
     char    m_fileMD5[ MD5_LENGTH ];     /* 文件的MD5码*/
     char    m_filePath[ PATH_LENGTH ];   /* 文件路径*/
+    mode_t  m_fileMode;                  /* 文件权限*/
     int64_t m_contentLength;/* 协议包后边的数据实体字节数*/
 
     Protocol()
@@ -117,6 +125,70 @@ struct Common
         {
             setSocketNoneblocking( fd );
         }
+    }
+
+    /* 错误处理*/
+    static void PerrExit(const char *s)
+    {
+        perror(s);
+        exit(1);
+    }
+
+
+    /* 向套接字发送buf中指定字节数的数据*/
+    static bool SendData( int sockFd, char *buf, int size  )
+    {
+        int needSend = size;
+        int haveSend = 0;
+
+        int ret = 0;
+        while( needSend > 0  )
+        {
+            ret = write( sockFd, buf + haveSend, needSend );
+            if( ret < -1  )
+            {
+                if( errno == EAGAIN || errno == EWOULDBLOCK )
+                {
+                    continue;
+                }
+                return false;
+            }
+
+            needSend -= ret;
+            haveSend += ret;
+        }
+        return true;
+    }
+
+
+    /* 从套接字描述符中接收指定字节数的数据到buf*/
+    static bool RecvData( int sockFd, char *buf, int size  )
+    {
+        int needRecv = size;
+        int haveRecv = 0;
+
+        int ret = 0;
+        while( needRecv > 0  )
+        {
+            ret = read( sockFd, buf + haveRecv, needRecv );
+            if( ret < -1  )
+            {
+                if( errno == EAGAIN || errno == EWOULDBLOCK )
+                {
+                    continue;
+                }
+                return false;
+            }
+
+            if( ret == 0  )
+            {
+                return false;
+            }
+
+            needRecv -= ret;
+            haveRecv += ret;
+        }
+        return true;  
     }
 };
 

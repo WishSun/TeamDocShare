@@ -205,6 +205,7 @@ void Server::Run()
                     /* 请求包已接收完毕*/
                     if( pUsersReqest[ sockfd ].haveRecv == sizeof(Protocol) )
                     {
+                        printf("接收到一个文件请求包\n");
                         pUsersReqest[ sockfd ].haveRecv = 0;
                         pUsersReqest[ sockfd ].needRecv = -1;
 
@@ -227,6 +228,7 @@ void Server::Run()
             /* 出现异常情况*/
             else if( events[i].events & ( EPOLLRDHUP | EPOLLHUP | EPOLLERR ) )
             {
+                printf("异常触发\n");
                 EpollDel( events[i].data.fd );
                 close( events[i].data.fd );
             }

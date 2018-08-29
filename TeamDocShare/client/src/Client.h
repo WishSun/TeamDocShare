@@ -36,6 +36,8 @@ private:
     bool ChangeMyGroup(int gid); /* 更改所属组*/
     void GetMyGroupInfo();       /* 获取用户所属组信息*/
     
+
+    void GetNameAndPwd(bool isRegister);     /* 从标准输入获取用户名和密码*/
 public:
     Client(char *ip, int port);  /* 构造函数*/
     ~Client();                   /* 析构函数*/

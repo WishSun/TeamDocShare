@@ -13,70 +13,6 @@
 #include <arpa/inet.h>
 #include <errno.h>
 
-/*-----------------------------非成员函数-----------------------------*/
-
-/* 错误处理*/
-void PerrExit(const char *s)
-{
-    perror(s);
-    exit(1);
-}
-
-/* 向套接字发送buf中指定字节数的数据*/
-bool SendData( int sockFd, char *buf, int size )
-{
-    int needSend = size;
-    int haveSend = 0;
-
-    int ret = 0;
-    while( needSend > 0 )
-    {
-        ret = send( sockFd, buf + haveSend, needSend, 0);
-        if( ret < -1 )
-        {
-            if( errno == EAGAIN )
-            {
-                continue;
-            }
-            return false;
-        }
-        needSend -= ret;
-        haveSend += ret;
-    }
-
-    return true;
-}
-
-/* 从套接字描述符中接收指定字节数的数据到buf*/
-bool RecvData( int sockFd, char *buf, int size )
-{
-    int needRecv = size;
-    int haveRecv = 0;
-
-    int ret = 0;
-    while( needRecv > 0 )
-    {
-        ret = recv( sockFd, buf + haveRecv, needRecv, 0);
-        if( ret < -1 )
-        {
-            if( errno == EAGAIN )
-            {
-                continue;
-            }
-            return false;
-        }
-        if( ret == 0 )
-        {
-            printf("服务器断开连接!\n");
-            exit(1);
-        }
-        needRecv -= ret;
-        haveRecv += ret;
-    }
-
-    return true;  
-}
-
 /*-------------------------------private-------------------------------*/
 
 /* 连接服务端*/
@@ -118,23 +54,23 @@ bool Client::CheckLogin()
 {
     memset(&m_prot, 0x00, sizeof(m_prot));
     m_prot.m_PType = PTYPE_LOGIN;
-    m_prot.m_contentLength = strlen(m_pwd);
     strcpy(m_prot.m_userName, m_userName);
+    strcpy(m_prot.m_filePath, m_pwd);
     
     int ret = -1;
     int needToSend = sizeof(sizeof(m_prot));
 
     /* 发送登录请求包*/
-    if( ! SendData(m_sockFd, (char *)&m_prot, sizeof(m_prot)) )
+    if( ! Common::SendData(m_sockFd, (char *)&m_prot, sizeof(m_prot)) )
     {
-        PerrExit("send");
+        Common::PerrExit("send");
     }
     printf("登录请求已发送\n\n");
   
     /* 接收服务端对登录请求的响应包*/
-    if( ! RecvData(m_sockFd, (char *)&m_prot, sizeof(m_prot)) )
+    if( ! Common::RecvData(m_sockFd, (char *)&m_prot, sizeof(m_prot)) )
     {
-        PerrExit("recv");
+        Common::PerrExit("recv");
     }
     printf("已接收到服务端响应\n");
 
@@ -156,7 +92,36 @@ bool Client::CheckRegister()
 {
     memset(&m_prot, 0x00, sizeof(m_prot));
     m_prot.m_PType = PTYPE_REGISTER;
+    strcpy(m_prot.m_userName, m_userName);
+    strcpy(m_prot.m_filePath, m_pwd);
     
+    int ret = -1;
+    int needToSend = sizeof(sizeof(m_prot));
+
+    /* 发送注册请求包*/
+    if( ! Common::SendData(m_sockFd, (char *)&m_prot, sizeof(m_prot)) )
+    {
+        Common::PerrExit("send register request");
+    }
+    printf("注册请求已发送\n\n");
+  
+    /* 接收服务端对注册请求的响应包*/
+    if( ! Common::RecvData(m_sockFd, (char *)&m_prot, sizeof(m_prot)) )
+    {
+        Common::PerrExit("receive register response");
+    }
+    printf("已接收到服务端响应\n");
+
+    if( m_prot.m_PType == PTYPE_TRUE )
+    {
+        printf("注册成功\n");
+        return true;
+    }
+    else
+    {
+        printf("注册失败\n");
+        return false;
+    }   
 }
 
 
@@ -224,6 +189,42 @@ void Client::GetMyGroupInfo()
     
 }
 
+/* 从标准输入获取用户名和密码*/
+void Client::GetNameAndPwd(bool isRegister)
+{
+    printf("请输入用户名: ");
+    scanf("%s", m_userName);
+   
+    if( isRegister )
+    {
+        char pwd[ PWD_LENGTH ] = {0};
+        while( true )
+        {
+            printf("请输入注册密码: ");
+            memset(pwd, 0x00, PWD_LENGTH);
+            scanf("%s", pwd);
+           
+            printf("请再次输入注册密码: ");
+            memset(m_pwd, 0x00, PWD_LENGTH);
+            scanf("%s", m_pwd);
+
+            if( strncmp(pwd, m_pwd, PWD_LENGTH) == 0 )
+            {
+                break;   
+            }
+            else
+            {
+                printf("两次密码不一致，请重新输入！\n\n");
+            }
+        }
+    }
+    else
+    {
+        printf("请输入登录密码: ");
+        memset(m_pwd, 0x00, PWD_LENGTH);
+        scanf("%s", m_pwd);
+    }
+}
 
 /*-------------------------------public-------------------------------*/
 
@@ -271,11 +272,17 @@ void Client::Run()
         {
             case 1:
             {
+                GetNameAndPwd(false);
+
+                printf("登录用户名为: [%s], 密码为: [%s]\n\n", m_userName, m_pwd);
                 haveLogin = CheckLogin();
                 break;
             }
             case 2:
             {
+                GetNameAndPwd(true);
+
+                printf("登录用户名为: [%s], 密码为: [%s]\n\n", m_userName, m_pwd);
                 haveLogin = CheckRegister();
                 break;
             }
@@ -287,6 +294,17 @@ void Client::Run()
         }
     }
 
+    /* 登录成功-----------------------------------------------------*/
+    /* 开启自动上传*/
+    m_pAutoUpload = AutoUpload::CreateAutoUpload(m_userName, m_prot.m_groupID, m_sockFd);
+
     PrintFunctionUI();
+
+    
+
+    while(1)
+    {
+        sleep(1);
+    }
 }
 

@@ -13,7 +13,6 @@
 /* 交换两个链表的身份*/
 void TaskThread::ExchangeList()
 {
-    printf("交换身份...\n");
     m_mutex.lock();
 
     int temp = m_busyIdx;
@@ -27,7 +26,7 @@ void TaskThread::ExchangeList()
 
 /* 任务线程构造函数*/
 TaskThread::TaskThread( int epollFd, int maxLength )
-    : m_epollFd(epollFd), m_maxLength(maxLength), m_freeIdx(0), m_busyIdx(1), m_count(10)
+    : m_epollFd(epollFd), m_maxLength(maxLength), m_freeIdx(0), m_busyIdx(1), m_count(50)
 {
     /* 将this指针作为参数传给线程函数*/
     pthread_create(&m_tid, NULL, Run, this);
@@ -78,16 +77,26 @@ void* TaskThread::Run(void *arg)
 
     while( true )
     {
-        /* 两个任务队列都为空时，阻塞*/
-        if( pTThr->m_taskList[ pTThr->m_busyIdx ].empty() && pTThr->m_taskList[ pTThr->m_freeIdx ].empty() ) 
+        if( pTThr->m_taskList[ pTThr->m_busyIdx ].empty() )
         {
-            pTThr->m_cond.wait();
+            /* 两个任务链表都为空时，阻塞*/
+            if( pTThr->m_taskList[ pTThr->m_freeIdx ].empty() ) 
+            {
+                pTThr->m_cond.wait();
 
-            /* 有新任务到来在空闲任务链表，在此交换两个链表身份*/
-            pTThr->ExchangeList();
+                /* 有新任务到来在空闲任务链表，在此交换两个链表身份*/
+                pTThr->ExchangeList();
 
-            /* 遍历迭代器始终指向繁忙任务链表的结点*/
-            iter = pTThr->m_taskList[ pTThr->m_busyIdx ].begin();
+                /* 遍历迭代器始终指向繁忙任务链表的结点*/
+                iter = pTThr->m_taskList[ pTThr->m_busyIdx ].begin();
+            }
+            /* 如果空闲任务链表不为空时，交换两个链表的身份*/
+            else
+            {
+                pTThr->ExchangeList();
+                iter = pTThr->m_taskList[ pTThr->m_busyIdx ].begin();
+            }
+
         }
 
         /* 链表迭代器走到头，即轮转一遍，然后再从头开始，计数器+1*/
@@ -111,7 +120,7 @@ void* TaskThread::Run(void *arg)
         /* 执行任务期间未出错 */
         if( ret == true )
         {
-            /*如果任务已完成，则删除任务结点，并将客户端描述符添加回epoll监听集合*/
+            /*如果任务已完成，则删除并释放任务结点，并将客户端描述符添加回epoll监听集合*/
             if( (*iter)->TaskIsFinish() )
             {
                 printf("任务已完成...\n");
@@ -120,6 +129,7 @@ void* TaskThread::Run(void *arg)
 
                 delIter = iter;       
                 ++iter;
+                free((*delIter));
                 pTThr->m_taskList[ pTThr->m_busyIdx ].erase(delIter);
             }
             else 
@@ -133,6 +143,9 @@ void* TaskThread::Run(void *arg)
         {
             delIter = iter;       
             ++iter;
+
+            (*delIter)->CloseSocket();
+            free((*delIter));
             pTThr->m_taskList[ pTThr->m_busyIdx ].erase(delIter);
         }
     }

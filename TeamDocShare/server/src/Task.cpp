@@ -9,6 +9,9 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include <fcntl.h>
+#include <dirent.h>
+#include <sys/stat.h>
 
 
 /*----------------------------private----------------------------*/
@@ -16,14 +19,99 @@
 /* 处理用户上传文件任务*/
 bool Task::HandleUploadFile()
 {
-    
+    switch( m_handle_status )
+    {
+        /* 任务正在处理状态*/
+        case HANDLEING:
+        {
+            /* 创建并打开文件*/
+            if( m_fileFd == -1 )
+            {
+                char userFile[ PATH_LENGTH ] = {0};
+                sprintf(userFile, "./%s.share/%s", m_prot.m_userName, m_prot.m_filePath);
+
+                m_fileFd = open(userFile, O_CREAT | O_WRONLY | O_TRUNC, m_prot.m_fileMode);
+                m_sockFd = m_prot.m_sockFd;
+                m_needRecv = m_prot.m_contentLength;
+            }
+
+            /* 从套接字中读取文件数据, 只读一次*/
+            int recvLen = m_needRecv > SENDRECV_LENGTH ? SENDRECV_LENGTH : m_needRecv;
+            char buff[ SENDRECV_LENGTH ] = {0};
+            int ret = read(m_sockFd, buff, recvLen);
+            if( ret == 0 )
+            {
+                return false;
+            }
+            if( ret == -1 )
+            {
+                if( errno != EAGAIN && errno != EWOULDBLOCK )
+                {
+                    return false;
+                }
+                m_isFinish = false;
+                break;
+            }
+
+            /* 将读到的数据写入文件*/
+            bool result = Common::SendData(m_fileFd, buff, ret);
+
+            m_needRecv -= ret;
+            m_haveRecv += ret;
+
+            printf("m_needRecv: %d\n\n", m_needRecv);
+
+            /* 读取完毕*/
+            if( m_needRecv == 0 )
+            {
+                close(m_fileFd);   
+
+                /* 状态迁移至发送响应状态*/
+                m_prot.m_PType = PTYPE_TRUE;
+                m_handle_status = SEND_RESPONSE;
+            }
+            else
+            {
+                m_isFinish = false;
+                break;
+            }
+        }
+
+        /* 发送响应状态*/
+        case SEND_RESPONSE:
+        {
+            if( m_needSend == -1 )
+            {
+                m_needSend = sizeof(m_prot);
+                m_haveSend = 0;
+            }
+
+            int ret = write(m_sockFd, (char *)&m_prot + m_haveSend, m_needSend);
+            if( ret == -1 )
+            {
+                if( errno != EAGAIN && errno != EWOULDBLOCK )
+                {
+                    return false;
+                }
+            }
+            m_needSend -= ret;
+            m_haveSend += ret;
+
+            m_isFinish = (m_needSend == 0);
+            break;
+        }
+        
+        default: return false;
+    }
+
+    return true;
 }
 
 
-/* 处理用户上传文件任务*/
+/* 处理用户下载文件任务*/
 bool Task::HandleDownloadFile()
 {
-    
+    /* 如果文件存在，需检验用户给的文件路径名，是不是他团队成员的文件, 不是则无访问权限*/
 }
 
 
@@ -84,7 +172,55 @@ bool Task::HandleUserLogin()
 /* 处理用户注册任务*/
 bool Task::HandleUserRegister()
 {
-    
+    if( m_needSend == -1 )   
+    {
+        UserInfo user;
+        strcpy(user.m_userName, m_prot.m_userName);
+        strcpy(user.m_userPwd, m_prot.m_filePath);  
+
+        if( m_pUM->AddNewUser(&user) )
+        {
+            m_prot.m_PType = PTYPE_TRUE;
+            m_prot.m_groupID = -1;
+
+            /* 创建用户共享目录*/
+            char userDir[ PATH_LENGTH ] = {0};
+            sprintf(userDir, "./%s.share", user.m_userName);
+            mkdir(userDir, 0777);
+        }
+        else
+        {
+            m_prot.m_PType = PTYPE_ERROR;
+        }
+
+        m_needSend = sizeof(m_prot);
+        m_haveSend = 0;
+    }
+    if( m_needSend > 0 )
+    {
+        int ret = write(m_sockFd, (char *)&m_prot + m_haveSend, m_needSend);
+        if( ret == -1 )
+        {
+            if( errno != EAGAIN && errno != EWOULDBLOCK )
+            {
+                return false;
+            }
+        }
+
+        m_needSend -= ret;
+        m_haveSend += ret;
+    }
+
+    if( m_needSend == 0 )
+    {
+        m_isFinish = true;
+    }
+    else
+    {
+        m_isFinish = false;
+    }
+
+    return true;
 }
 
 
@@ -127,9 +263,10 @@ bool Task::HandleCreateGroup()
 
 /* 任务类构造函数*/
 Task::Task(const Protocol& prot)
-    :m_prot(prot), m_isFinish(false), m_fileFd(-1), m_sockFd(prot.m_sockFd), 
-    m_needSend(-1), m_needRecv(-1)
+    :m_prot(prot), m_isFinish(false), m_fileFd(-1), m_sockFd(prot.m_sockFd), m_needSend(-1), m_haveSend(0), m_needRecv(-1),m_haveRecv(0)
 {
+    m_handle_status = HANDLEING;
+
     m_pUM = UserManage::CreateUserManage();
     m_pGM = GroupManage::CreateGroupManage();
 }
@@ -208,4 +345,11 @@ bool Task::TaskIsFinish()
 void Task::AddTaskFdToEpoll( int epollFd )
 {
     Common::EpollAddCore(epollFd, m_sockFd, true);   
+}
+
+
+/* 关闭套接字*/
+void Task::CloseSocket()
+{
+    close(m_sockFd);
 }

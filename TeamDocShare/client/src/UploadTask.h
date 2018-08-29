@@ -9,9 +9,13 @@
 #define _UPLOADTASK_H
 
 #include "../../common/inc/common.h"
+#include <sys/stat.h>
+
 
 struct UploadTask
 {
-    char filePath[ PATH_LENGTH ];
+    char    m_filePath[ PATH_LENGTH ];  /* 文件全路径名*/
+    mode_t  m_fileMode;   /* 文件权限*/
+    int64_t m_fileSize;   /* 文件大小*/
 };
 #endif

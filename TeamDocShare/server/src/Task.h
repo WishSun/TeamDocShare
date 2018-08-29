@@ -14,6 +14,12 @@
 class Task
 {
 private:
+    enum handle_status
+    {
+        HANDLEING = 0,      /* 任务处理状态*/
+        SEND_RESPONSE       /* 发送响应状态*/
+    };
+    
     Protocol  m_prot;       /* 该任务对象应处理的协议包*/
     bool      m_isFinish;   /* 任务是否已完成*/
 
@@ -25,6 +31,9 @@ private:
 
     int       m_needRecv;   /* 需要发送的字节数*/
     int       m_haveRecv;   /* 已经发送的字节数*/
+    
+    handle_status m_handle_status; /* 任务处理状态*/
+
     
     UserManage  *m_pUM;  /* 用户管理类单例对象*/
     GroupManage *m_pGM;  /* 群组管理类单例对象*/
@@ -48,6 +57,8 @@ public:
     bool TaskIsFinish();    /* 判断任务是否已完成*/
 
     void AddTaskFdToEpoll( int epollFd ); /* 将完成任务的套接字描述符重新添加到epoll监听集合*/
+
+    void CloseSocket();     /* 关闭套接字*/
 };
 
 #endif

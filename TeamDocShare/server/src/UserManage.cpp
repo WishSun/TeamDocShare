@@ -121,13 +121,27 @@ bool UserManage::FindUser(UserInfo *pUser)
     /* 未查找到记录*/
     if( num == 0 )
     {
+        /* 释放结果集*/
+        mysql_free_result(p_res);
+
+        /* 归还数据库连接*/
+        FreeConn(p_mysql);
+
         return false;
     }
 
     MYSQL_ROW p_row = mysql_fetch_row(p_res);
     if( p_row != NULL )
     {
-        pUser->m_groupID = atoi(p_row[0]);
+        /* 如果未加入群组*/
+        if( p_row[0] == NULL )
+        {
+            pUser->m_groupID = -1;
+        }
+        else
+        {
+            pUser->m_groupID = atoi(p_row[0]);
+        }
     }
 
     /* 释放结果集*/
@@ -143,7 +157,32 @@ bool UserManage::FindUser(UserInfo *pUser)
 /* 添加一个新用户记录*/
 bool UserManage::AddNewUser(UserInfo *pUser)
 {
-    
+    char sql[1024] = {0};
+
+    /* 获取一条数据库连接*/
+    MYSQL *p_mysql = AllocConn();
+
+    sprintf(sql, "insert into userInfo(userName, userPassword) values('%s', '%s')", pUser->m_userName, pUser->m_userPwd);
+
+    /* 执行sql语句*/
+    if( mysql_query(p_mysql, sql) != 0 )
+    {
+        printf("query sql error: %s\n", mysql_error(p_mysql));
+        return false;
+    }
+
+    /* 获取插入新用户影响的行数*/
+    int num = mysql_affected_rows(p_mysql);
+ 
+    /* 归还数据库连接*/
+    FreeConn(p_mysql);
+
+    if( num != 1 )
+    {
+        return false;
+    }
+
+    return true;
 }
 
 

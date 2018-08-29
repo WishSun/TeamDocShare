@@ -9,4 +9,4 @@ $(BIN):$(OBJ)
 
 .PHONY:clean
 clean:
-	rm -rf $(BIN) $(OBJ)
+	rm -rf $(BIN) $(OBJ) core
