@@ -14,73 +14,88 @@ AppendTask	server/src/ThreadPool.cpp	/^bool ThreadPool::AppendTask(Task *pTask)$
 AppendTaskToPool	server/src/MyThreadPool.cpp	/^bool MyThreadPool::AppendTaskToPool( Protocol& prot )$/;"	f	class:MyThreadPool
 AutoUpload	client/src/AutoUpload.cpp	/^AutoUpload::AutoUpload(char *uName, int gid, int sockFd)$/;"	f	class:AutoUpload
 AutoUpload	client/src/AutoUpload.h	/^class AutoUpload$/;"	c
-AutoUpload	client/src/xiaoma.share/AutoUpload.cpp	/^AutoUpload::AutoUpload(char *uName, int gid, int sockFd)$/;"	f	class:AutoUpload
-AutoUpload	client/src/xiaoma.share/AutoUpload.h	/^class AutoUpload$/;"	c
+AutoUpload	server/src/wangjian.share/AutoUpload.cpp	/^AutoUpload::AutoUpload(char *uName, int gid, int sockFd)$/;"	f	class:AutoUpload
+AutoUpload	server/src/xiwang.share/AutoUpload.cpp	/^AutoUpload::AutoUpload(char *uName, int gid, int sockFd)$/;"	f	class:AutoUpload
 BIG_THR_LIST_LENGTH	server/src/ThreadPool.cpp	15;"	d	file:
 BIG_THR_NUM	server/src/ThreadPool.cpp	11;"	d	file:
 BIN	client/src/Makefile	/^BIN=.\/client$/;"	m
 BIN	server/src/Makefile	/^BIN=.\/server$/;"	m
 CONF_PATH	client/src/main.cpp	15;"	d	file:
-CONF_PATH	client/src/xiaoma.share/main.cpp	15;"	d	file:
 CONF_PATH	server/src/main.cpp	15;"	d	file:
-CONF_PATH	server/src/xiaoma.share/main.cpp	15;"	d	file:
+CONF_PATH	server/src/wangjian.share/main.cpp	15;"	d	file:
+CONF_PATH	server/src/xiwang.share/main.cpp	15;"	d	file:
 ChangeMyGroup	client/src/Client.cpp	/^bool Client::ChangeMyGroup(int gid) $/;"	f	class:Client
-ChangeMyGroup	client/src/xiaoma.share/Client.cpp	/^bool Client::ChangeMyGroup(int gid) $/;"	f	class:Client
+ChangeMyGroup	server/src/wangjian.share/Client.cpp	/^bool Client::ChangeMyGroup(int gid) $/;"	f	class:Client
+ChangeMyGroup	server/src/xiwang.share/Client.cpp	/^bool Client::ChangeMyGroup(int gid) $/;"	f	class:Client
 ChangeUserGroupID	server/src/UserManage.cpp	/^bool UserManage::ChangeUserGroupID(char *pName, int gid)$/;"	f	class:UserManage
 CheckFileOccupied	client/src/AutoUpload.cpp	/^void AutoUpload::CheckFileOccupied(AutoUpload *pAU)$/;"	f	class:AutoUpload
-CheckFileOccupied	client/src/xiaoma.share/AutoUpload.cpp	/^void AutoUpload::CheckFileOccupied(AutoUpload *pAU)$/;"	f	class:AutoUpload
+CheckFileOccupied	server/src/wangjian.share/AutoUpload.cpp	/^void AutoUpload::CheckFileOccupied(AutoUpload *pAU)$/;"	f	class:AutoUpload
+CheckFileOccupied	server/src/xiwang.share/AutoUpload.cpp	/^void AutoUpload::CheckFileOccupied(AutoUpload *pAU)$/;"	f	class:AutoUpload
 CheckLogin	client/src/Client.cpp	/^bool Client::CheckLogin()$/;"	f	class:Client
-CheckLogin	client/src/xiaoma.share/Client.cpp	/^bool Client::CheckLogin()$/;"	f	class:Client
+CheckLogin	server/src/wangjian.share/Client.cpp	/^bool Client::CheckLogin()$/;"	f	class:Client
+CheckLogin	server/src/xiwang.share/Client.cpp	/^bool Client::CheckLogin()$/;"	f	class:Client
 CheckRegister	client/src/Client.cpp	/^bool Client::CheckRegister()$/;"	f	class:Client
-CheckRegister	client/src/xiaoma.share/Client.cpp	/^bool Client::CheckRegister()$/;"	f	class:Client
+CheckRegister	server/src/wangjian.share/Client.cpp	/^bool Client::CheckRegister()$/;"	f	class:Client
+CheckRegister	server/src/xiwang.share/Client.cpp	/^bool Client::CheckRegister()$/;"	f	class:Client
 Client	client/src/Client.cpp	/^Client::Client(char *ip, int port)  $/;"	f	class:Client
 Client	client/src/Client.h	/^class Client$/;"	c
-Client	client/src/xiaoma.share/Client.cpp	/^Client::Client(char *ip, int port)  $/;"	f	class:Client
-Client	client/src/xiaoma.share/Client.h	/^class Client$/;"	c
+Client	server/src/wangjian.share/Client.cpp	/^Client::Client(char *ip, int port)  $/;"	f	class:Client
+Client	server/src/xiwang.share/Client.cpp	/^Client::Client(char *ip, int port)  $/;"	f	class:Client
+CloseSocket	server/src/Task.cpp	/^void Task::CloseSocket()$/;"	f	class:Task
 Common	common/inc/common.h	/^struct Common$/;"	s
 Cond	common/inc/common.h	/^    Cond()$/;"	f	class:Cond
 Cond	common/inc/common.h	/^class Cond$/;"	c
 ConnectServer	client/src/Client.cpp	/^bool Client::ConnectServer()$/;"	f	class:Client
-ConnectServer	client/src/xiaoma.share/Client.cpp	/^bool Client::ConnectServer()$/;"	f	class:Client
+ConnectServer	server/src/wangjian.share/Client.cpp	/^bool Client::ConnectServer()$/;"	f	class:Client
+ConnectServer	server/src/xiwang.share/Client.cpp	/^bool Client::ConnectServer()$/;"	f	class:Client
 CreateAutoUpload	client/src/AutoUpload.cpp	/^AutoUpload* AutoUpload::CreateAutoUpload(char *uName, int gid, int sockFd)      $/;"	f	class:AutoUpload
-CreateAutoUpload	client/src/xiaoma.share/AutoUpload.cpp	/^AutoUpload* AutoUpload::CreateAutoUpload(char *uName, int gid, int sockFd)      $/;"	f	class:AutoUpload
+CreateAutoUpload	server/src/wangjian.share/AutoUpload.cpp	/^AutoUpload* AutoUpload::CreateAutoUpload(char *uName, int gid, int sockFd)      $/;"	f	class:AutoUpload
+CreateAutoUpload	server/src/xiwang.share/AutoUpload.cpp	/^AutoUpload* AutoUpload::CreateAutoUpload(char *uName, int gid, int sockFd)      $/;"	f	class:AutoUpload
 CreateBigThreadPool	server/src/ThreadPool.cpp	/^ThreadPool* ThreadPool::CreateBigThreadPool(int epollFd)$/;"	f	class:ThreadPool
 CreateEpoll	server/src/Server.cpp	/^bool Server::CreateEpoll()$/;"	f	class:Server
 CreateGroupManage	server/src/GroupManage.cpp	/^GroupManage* GroupManage::CreateGroupManage()  $/;"	f	class:GroupManage
 CreateMyThreadPool	server/src/MyThreadPool.cpp	/^MyThreadPool* MyThreadPool::CreateMyThreadPool(int epollFd)$/;"	f	class:MyThreadPool
 CreateNewGroup	client/src/Client.cpp	/^void Client::CreateNewGroup( GroupInfo *pGroup )$/;"	f	class:Client
-CreateNewGroup	client/src/xiaoma.share/Client.cpp	/^void Client::CreateNewGroup( GroupInfo *pGroup )$/;"	f	class:Client
+CreateNewGroup	server/src/wangjian.share/Client.cpp	/^void Client::CreateNewGroup( GroupInfo *pGroup )$/;"	f	class:Client
+CreateNewGroup	server/src/xiwang.share/Client.cpp	/^void Client::CreateNewGroup( GroupInfo *pGroup )$/;"	f	class:Client
 CreateServer	server/src/Server.cpp	/^Server* Server::CreateServer(char *ip, int port)$/;"	f	class:Server
 CreateSmallThreadPool	server/src/ThreadPool.cpp	/^ThreadPool* ThreadPool::CreateSmallThreadPool(int epollFd)$/;"	f	class:ThreadPool
 CreateSocket	server/src/Server.cpp	/^bool Server::CreateSocket()$/;"	f	class:Server
 CreateUserManage	server/src/UserManage.cpp	/^UserManage* UserManage::CreateUserManage()$/;"	f	class:UserManage
 DelUser	server/src/UserManage.cpp	/^bool UserManage::DelUser(char *pName)$/;"	f	class:UserManage
 DownloadTeamFile	client/src/Client.cpp	/^void Client::DownloadTeamFile(char *filePath)$/;"	f	class:Client
-DownloadTeamFile	client/src/xiaoma.share/Client.cpp	/^void Client::DownloadTeamFile(char *filePath)$/;"	f	class:Client
+DownloadTeamFile	server/src/wangjian.share/Client.cpp	/^void Client::DownloadTeamFile(char *filePath)$/;"	f	class:Client
+DownloadTeamFile	server/src/xiwang.share/Client.cpp	/^void Client::DownloadTeamFile(char *filePath)$/;"	f	class:Client
 EpollAdd	server/src/Server.cpp	/^void Server::EpollAdd(int fd, bool noneblock)$/;"	f	class:Server
 EpollAddCore	common/inc/common.h	/^    static void EpollAddCore(int epollFd, int fd, bool noneblock)$/;"	f	struct:Common
 EpollDel	server/src/Server.cpp	/^void Server::EpollDel(int fd)$/;"	f	class:Server
 ExchangeList	server/src/TaskThread.cpp	/^void TaskThread::ExchangeList()$/;"	f	class:TaskThread
+ExecuteInsertSql	server/src/UserManage.cpp	/^bool UserManage::ExecuteInsertSql(MYSQL *p_mysql, char *sql)$/;"	f	class:UserManage
 ExecuteTask	server/src/Task.cpp	/^bool Task::ExecuteTask()$/;"	f	class:Task
+FIRST_COME	server/src/Task.h	/^        FIRST_COME = 0,     \/* 任务首次到来状态*\/$/;"	e	enum:Task::handle_status
 FindUser	server/src/UserManage.cpp	/^bool UserManage::FindUser(UserInfo *pUser)$/;"	f	class:UserManage
 FreeConn	server/src/GroupManage.cpp	/^void GroupManage::FreeConn(MYSQL *pMysql)$/;"	f	class:GroupManage
 FreeConn	server/src/UserManage.cpp	/^void UserManage::FreeConn(MYSQL *pMysql)$/;"	f	class:UserManage
 GetAllGroupInfo	client/src/Client.cpp	/^void Client::GetAllGroupInfo()      $/;"	f	class:Client
-GetAllGroupInfo	client/src/xiaoma.share/Client.cpp	/^void Client::GetAllGroupInfo()      $/;"	f	class:Client
+GetAllGroupInfo	server/src/wangjian.share/Client.cpp	/^void Client::GetAllGroupInfo()      $/;"	f	class:Client
+GetAllGroupInfo	server/src/xiwang.share/Client.cpp	/^void Client::GetAllGroupInfo()      $/;"	f	class:Client
 GetFileList	server/src/UserManage.cpp	/^int  UserManage::GetFileList(char *pName, int gid, char **pList)$/;"	f	class:UserManage
 GetFilePathInMD5	server/src/UserManage.cpp	/^bool UserManage::GetFilePathInMD5(char *pMD5, char *filePath)$/;"	f	class:UserManage
 GetFreeNum	server/src/TaskThread.cpp	/^int TaskThread::GetFreeNum()$/;"	f	class:TaskThread
 GetGroupList	server/src/GroupManage.cpp	/^GroupInfo* GroupManage::GetGroupList()$/;"	f	class:GroupManage
 GetMyGroupInfo	client/src/Client.cpp	/^void Client::GetMyGroupInfo()       $/;"	f	class:Client
-GetMyGroupInfo	client/src/xiaoma.share/Client.cpp	/^void Client::GetMyGroupInfo()       $/;"	f	class:Client
+GetMyGroupInfo	server/src/wangjian.share/Client.cpp	/^void Client::GetMyGroupInfo()       $/;"	f	class:Client
+GetMyGroupInfo	server/src/xiwang.share/Client.cpp	/^void Client::GetMyGroupInfo()       $/;"	f	class:Client
 GetNameAndPwd	client/src/Client.cpp	/^void Client::GetNameAndPwd(bool isRegister)$/;"	f	class:Client
-GetNameAndPwd	client/src/xiaoma.share/Client.cpp	/^void Client::GetNameAndPwd(bool isRegister)$/;"	f	class:Client
+GetNameAndPwd	server/src/wangjian.share/Client.cpp	/^void Client::GetNameAndPwd(bool isRegister)$/;"	f	class:Client
+GetNameAndPwd	server/src/xiwang.share/Client.cpp	/^void Client::GetNameAndPwd(bool isRegister)$/;"	f	class:Client
 GetTeamFileList	client/src/Client.cpp	/^void Client::GetTeamFileList()      $/;"	f	class:Client
-GetTeamFileList	client/src/xiaoma.share/Client.cpp	/^void Client::GetTeamFileList()      $/;"	f	class:Client
+GetTeamFileList	server/src/wangjian.share/Client.cpp	/^void Client::GetTeamFileList()      $/;"	f	class:Client
+GetTeamFileList	server/src/xiwang.share/Client.cpp	/^void Client::GetTeamFileList()      $/;"	f	class:Client
 GroupInfo	common/inc/common.h	/^struct GroupInfo$/;"	s
 GroupManage	server/src/GroupManage.cpp	/^GroupManage::GroupManage(int initNum, int maxNum)   $/;"	f	class:GroupManage
 GroupManage	server/src/GroupManage.h	/^class GroupManage$/;"	c
-HANDLEING	server/src/Task.h	/^        HANDLEING = 0,      \/* 任务处理状态*\/$/;"	e	enum:Task::handle_status
+HANDLEING	server/src/Task.h	/^        HANDLEING,          \/* 任务处理状态*\/$/;"	e	enum:Task::handle_status
 HandleChangeGroup	server/src/Task.cpp	/^bool Task::HandleChangeGroup()$/;"	f	class:Task
 HandleCreateGroup	server/src/Task.cpp	/^bool Task::HandleCreateGroup()$/;"	f	class:Task
 HandleDownloadFile	server/src/Task.cpp	/^bool Task::HandleDownloadFile()$/;"	f	class:Task
@@ -92,8 +107,8 @@ HandleUserLogin	server/src/Task.cpp	/^bool Task::HandleUserLogin()$/;"	f	class:T
 HandleUserRegister	server/src/Task.cpp	/^bool Task::HandleUserRegister()$/;"	f	class:Task
 INIT_NUM	server/src/UserManage.cpp	12;"	d	file:
 IP_LENGTH	common/inc/common.h	43;"	d
-MAX_EVENT_NUMBER	server/src/Server.cpp	22;"	d	file:
-MAX_FD	server/src/Server.cpp	19;"	d	file:
+MAX_EVENT_NUMBER	server/src/Server.cpp	23;"	d	file:
+MAX_FD	server/src/Server.cpp	20;"	d	file:
 MAX_NUM	server/src/UserManage.cpp	13;"	d	file:
 MD5_LENGTH	common/inc/common.h	34;"	d
 Mutex	common/inc/common.h	/^    Mutex()$/;"	f	class:Mutex
@@ -106,6 +121,7 @@ OBJ	server/src/Makefile	/^OBJ=$(patsubst %.cpp, %.o, $(SRC))$/;"	m
 PATH_LENGTH	common/inc/common.h	25;"	d
 PTYPE	common/inc/common.h	/^enum PTYPE$/;"	g
 PTYPE_CHANGE_GROUP	common/inc/common.h	/^    PTYPE_CHANGE_GROUP,         \/* 更改所属组*\/$/;"	e	enum:PTYPE
+PTYPE_CONTINUE	common/inc/common.h	/^    PTYPE_CONTINUE,             \/* 继续请求*\/$/;"	e	enum:PTYPE
 PTYPE_CREATE_GROUP	common/inc/common.h	/^    PTYPE_CREATE_GROUP,         \/* 创建新组*\/$/;"	e	enum:PTYPE
 PTYPE_DOWNLOAD_FILE	common/inc/common.h	/^    PTYPE_DOWNLOAD_FILE,        \/* 下载文件*\/$/;"	e	enum:PTYPE
 PTYPE_ERROR	common/inc/common.h	/^    PTYPE_ERROR,                \/* 出错的请求或处理*\/$/;"	e	enum:PTYPE
@@ -114,37 +130,45 @@ PTYPE_GET_GROUP_LIST	common/inc/common.h	/^    PTYPE_GET_GROUP_LIST,       \/* �
 PTYPE_GET_MY_GROUP_INFO	common/inc/common.h	/^    PTYPE_GET_MY_GROUP_INFO,    \/* 获取用户自己的组信息*\/$/;"	e	enum:PTYPE
 PTYPE_LOGIN	common/inc/common.h	/^    PTYPE_LOGIN,                \/* 登录*\/$/;"	e	enum:PTYPE
 PTYPE_REGISTER	common/inc/common.h	/^    PTYPE_REGISTER,             \/* 注册*\/$/;"	e	enum:PTYPE
-PTYPE_TRUE	common/inc/common.h	/^    PTYPE_TRUE                  \/* 正确的请求*\/$/;"	e	enum:PTYPE
+PTYPE_TRUE	common/inc/common.h	/^    PTYPE_TRUE,                 \/* 正确的请求*\/$/;"	e	enum:PTYPE
 PTYPE_UPLOAD_FILE	common/inc/common.h	/^    PTYPE_UPLOAD_FILE = 0,      \/* 上传文件*\/$/;"	e	enum:PTYPE
 PWD_LENGTH	common/inc/common.h	31;"	d
 PerrExit	common/inc/common.h	/^    static void PerrExit(const char *s)$/;"	f	struct:Common
 PrintFunctionUI	client/src/Client.cpp	/^void Client::PrintFunctionUI()      $/;"	f	class:Client
-PrintFunctionUI	client/src/xiaoma.share/Client.cpp	/^void Client::PrintFunctionUI()      $/;"	f	class:Client
+PrintFunctionUI	server/src/wangjian.share/Client.cpp	/^void Client::PrintFunctionUI()      $/;"	f	class:Client
+PrintFunctionUI	server/src/xiwang.share/Client.cpp	/^void Client::PrintFunctionUI()      $/;"	f	class:Client
 PrintLoginRegisterUI	client/src/Client.cpp	/^void Client::PrintLoginRegisterUI()$/;"	f	class:Client
-PrintLoginRegisterUI	client/src/xiaoma.share/Client.cpp	/^void Client::PrintLoginRegisterUI()$/;"	f	class:Client
+PrintLoginRegisterUI	server/src/wangjian.share/Client.cpp	/^void Client::PrintLoginRegisterUI()$/;"	f	class:Client
+PrintLoginRegisterUI	server/src/xiwang.share/Client.cpp	/^void Client::PrintLoginRegisterUI()$/;"	f	class:Client
 Protocol	common/inc/common.h	/^    Protocol()$/;"	f	struct:Protocol
 Protocol	common/inc/common.h	/^struct Protocol$/;"	s
 RecvData	common/inc/common.h	/^    static bool RecvData( int sockFd, char *buf, int size  )$/;"	f	struct:Common
 Run	client/src/Client.cpp	/^void Client::Run()      $/;"	f	class:Client
-Run	client/src/xiaoma.share/Client.cpp	/^void Client::Run()      $/;"	f	class:Client
 Run	server/src/Server.cpp	/^void Server::Run()$/;"	f	class:Server
 Run	server/src/TaskThread.cpp	/^void* TaskThread::Run(void *arg)$/;"	f	class:TaskThread
+Run	server/src/wangjian.share/Client.cpp	/^void Client::Run()      $/;"	f	class:Client
+Run	server/src/xiwang.share/Client.cpp	/^void Client::Run()      $/;"	f	class:Client
 SENDRECV_LENGTH	common/inc/common.h	40;"	d
+SEND_CONTINUE	server/src/Task.h	/^        SEND_CONTINUE,      \/* 发送让客户端继续发送数据状态*\/$/;"	e	enum:Task::handle_status
 SEND_RESPONSE	server/src/Task.h	/^        SEND_RESPONSE       \/* 发送响应状态*\/$/;"	e	enum:Task::handle_status
 SMA_THR_LIST_LENGTH	server/src/ThreadPool.cpp	16;"	d	file:
 SMA_THR_NUM	server/src/ThreadPool.cpp	12;"	d	file:
 SRC	client/src/Makefile	/^SRC=$(wildcard .\/*.cpp)$/;"	m
 SRC	server/src/Makefile	/^SRC=$(wildcard .\/*.cpp)$/;"	m
 ScanDirent	client/src/AutoUpload.cpp	/^void *AutoUpload::ScanDirent(void *arg)$/;"	f	class:AutoUpload
-ScanDirent	client/src/xiaoma.share/AutoUpload.cpp	/^void *AutoUpload::ScanDirent(void *arg)$/;"	f	class:AutoUpload
+ScanDirent	server/src/wangjian.share/AutoUpload.cpp	/^void *AutoUpload::ScanDirent(void *arg)$/;"	f	class:AutoUpload
+ScanDirent	server/src/xiwang.share/AutoUpload.cpp	/^void *AutoUpload::ScanDirent(void *arg)$/;"	f	class:AutoUpload
 ScanDirentCore	client/src/AutoUpload.cpp	/^void AutoUpload::ScanDirentCore(char *shareDirent, AutoUpload *pAU)$/;"	f	class:AutoUpload
-ScanDirentCore	client/src/xiaoma.share/AutoUpload.cpp	/^void AutoUpload::ScanDirentCore(char *shareDirent, AutoUpload *pAU)$/;"	f	class:AutoUpload
+ScanDirentCore	server/src/wangjian.share/AutoUpload.cpp	/^void AutoUpload::ScanDirentCore(char *shareDirent, AutoUpload *pAU)$/;"	f	class:AutoUpload
+ScanDirentCore	server/src/xiwang.share/AutoUpload.cpp	/^void AutoUpload::ScanDirentCore(char *shareDirent, AutoUpload *pAU)$/;"	f	class:AutoUpload
 SendData	common/inc/common.h	/^    static bool SendData( int sockFd, char *buf, int size  )$/;"	f	struct:Common
 Server	server/src/Server.cpp	/^Server::Server(char *ip, int port)$/;"	f	class:Server
 Server	server/src/Server.h	/^class Server$/;"	c
 SetFilePathtoMD5Map	server/src/UserManage.cpp	/^bool UserManage::SetFilePathtoMD5Map(char *pMD5, char *filePath)$/;"	f	class:UserManage
+SetFilePathtoUserName	server/src/UserManage.cpp	/^bool UserManage::SetFilePathtoUserName(char *filePath, char *uName) $/;"	f	class:UserManage
 StartAutoUpload	client/src/Client.cpp	/^void Client::StartAutoUpload()$/;"	f	class:Client
-StartAutoUpload	client/src/xiaoma.share/Client.cpp	/^void Client::StartAutoUpload()$/;"	f	class:Client
+StartAutoUpload	server/src/wangjian.share/Client.cpp	/^void Client::StartAutoUpload()$/;"	f	class:Client
+StartAutoUpload	server/src/xiwang.share/Client.cpp	/^void Client::StartAutoUpload()$/;"	f	class:Client
 TEXT_LENGTH	common/inc/common.h	37;"	d
 TYPE_DOUBLE	common/inc/parseCfg.h	/^    TYPE_DOUBLE,$/;"	e	enum:__value_type_t
 TYPE_INT	common/inc/parseCfg.h	/^    TYPE_INT = 0,$/;"	e	enum:__value_type_t
@@ -158,11 +182,12 @@ TaskThread	server/src/TaskThread.h	/^class TaskThread$/;"	c
 ThreadPool	server/src/ThreadPool.cpp	/^ThreadPool::ThreadPool( int epollFd, bool isBig ) $/;"	f	class:ThreadPool
 ThreadPool	server/src/ThreadPool.h	/^class ThreadPool$/;"	c
 UploadFile	client/src/AutoUpload.cpp	/^void *AutoUpload::UploadFile(void *arg)$/;"	f	class:AutoUpload
-UploadFile	client/src/xiaoma.share/AutoUpload.cpp	/^void *AutoUpload::UploadFile(void *arg)$/;"	f	class:AutoUpload
+UploadFile	server/src/wangjian.share/AutoUpload.cpp	/^void *AutoUpload::UploadFile(void *arg)$/;"	f	class:AutoUpload
+UploadFile	server/src/xiwang.share/AutoUpload.cpp	/^void *AutoUpload::UploadFile(void *arg)$/;"	f	class:AutoUpload
 UploadFileCore	client/src/AutoUpload.cpp	/^bool AutoUpload::UploadFileCore(AutoUpload *pAU, UploadTask *pUTask)$/;"	f	class:AutoUpload
-UploadFileCore	client/src/xiaoma.share/AutoUpload.cpp	/^bool AutoUpload::UploadFileCore(AutoUpload *pAU, UploadTask *pUTask)$/;"	f	class:AutoUpload
+UploadFileCore	server/src/wangjian.share/AutoUpload.cpp	/^bool AutoUpload::UploadFileCore(AutoUpload *pAU, UploadTask *pUTask)$/;"	f	class:AutoUpload
+UploadFileCore	server/src/xiwang.share/AutoUpload.cpp	/^bool AutoUpload::UploadFileCore(AutoUpload *pAU, UploadTask *pUTask)$/;"	f	class:AutoUpload
 UploadTask	client/src/UploadTask.h	/^struct UploadTask$/;"	s
-UploadTask	server/src/xiaoma.share/UploadTask.h	/^struct UploadTask$/;"	s
 UserInfo	common/inc/common.h	/^    UserInfo():m_groupID(-1)$/;"	f	struct:UserInfo
 UserInfo	common/inc/common.h	/^struct UserInfo$/;"	s
 UserManage	server/src/UserManage.cpp	/^UserManage::UserManage(int initNum, int maxNum)$/;"	f	class:UserManage
@@ -170,9 +195,7 @@ UserManage	server/src/UserManage.h	/^class UserManage$/;"	c
 UserRequest	server/src/Server.cpp	/^    UserRequest(): haveRecv(0),needRecv(-1){}$/;"	f	struct:UserRequest
 UserRequest	server/src/Server.cpp	/^struct UserRequest$/;"	s	file:
 _AUTOUPLOAD_H	client/src/AutoUpload.h	9;"	d
-_AUTOUPLOAD_H	client/src/xiaoma.share/AutoUpload.h	9;"	d
 _CLIENT_H	client/src/Client.h	9;"	d
-_CLIENT_H	client/src/xiaoma.share/Client.h	9;"	d
 _GROUPMANAGE_H	server/src/GroupManage.h	9;"	d
 _LOCKER_H	common/inc/common.h	9;"	d
 _MYTHREADPOOL_H	server/src/MyThreadPool.h	9;"	d
@@ -182,30 +205,27 @@ _TASKTHREAD_H	server/src/TaskThread.h	9;"	d
 _TASK_H	server/src/Task.h	9;"	d
 _THREADPOOL_H	server/src/ThreadPool.h	9;"	d
 _UPLOADTASK_H	client/src/UploadTask.h	9;"	d
-_UPLOADTASK_H	server/src/xiaoma.share/UploadTask.h	9;"	d
 _USERMANAGE_H	server/src/UserManage.h	9;"	d
 __value_type_t	common/inc/parseCfg.h	/^enum __value_type_t$/;"	g
 conf_path	client/src/main.cpp	/^char conf_path[ PATH_LENGTH ] = {0};$/;"	v
-conf_path	client/src/xiaoma.share/main.cpp	/^char conf_path[ PATH_LENGTH ] = {0};$/;"	v
 conf_path	server/src/main.cpp	/^char conf_path[ PATH_LENGTH ] = {0};$/;"	v
-conf_path	server/src/xiaoma.share/main.cpp	/^char conf_path[ PATH_LENGTH ] = {0};$/;"	v
+conf_path	server/src/wangjian.share/main.cpp	/^char conf_path[ PATH_LENGTH ] = {0};$/;"	v
+conf_path	server/src/xiwang.share/main.cpp	/^char conf_path[ PATH_LENGTH ] = {0};$/;"	v
 get_ip_port	client/src/main.cpp	/^int get_ip_port(char *conf_path, char *ip, int *port)$/;"	f
-get_ip_port	client/src/xiaoma.share/main.cpp	/^int get_ip_port(char *conf_path, char *ip, int *port)$/;"	f
 get_ip_port	server/src/main.cpp	/^int get_ip_port(char *conf_path, char *ip, int *port)$/;"	f
-get_ip_port	server/src/xiaoma.share/main.cpp	/^int get_ip_port(char *conf_path, char *ip, int *port)$/;"	f
+get_ip_port	server/src/wangjian.share/main.cpp	/^int get_ip_port(char *conf_path, char *ip, int *port)$/;"	f
+get_ip_port	server/src/xiwang.share/main.cpp	/^int get_ip_port(char *conf_path, char *ip, int *port)$/;"	f
 get_path	client/src/main.cpp	/^static int get_path()$/;"	f	file:
-get_path	client/src/xiaoma.share/main.cpp	/^static int get_path()$/;"	f	file:
 get_path	server/src/main.cpp	/^static int get_path()$/;"	f	file:
-get_path	server/src/xiaoma.share/main.cpp	/^static int get_path()$/;"	f	file:
+get_path	server/src/wangjian.share/main.cpp	/^static int get_path()$/;"	f	file:
+get_path	server/src/xiwang.share/main.cpp	/^static int get_path()$/;"	f	file:
 handle_status	server/src/Task.h	/^    enum handle_status$/;"	g	class:Task
 handle_t	common/inc/common.h	/^typedef void*(* handle_t )(void*);$/;"	t
 haveRecv	server/src/Server.cpp	/^    int haveRecv;$/;"	m	struct:UserRequest	file:
 lock	common/inc/common.h	/^    bool lock()$/;"	f	class:Mutex
 m_IP	server/src/Server.h	/^    char    m_IP[ IP_LENGTH ];  \/* 服务器监听地址*\/$/;"	m	class:Server
-m_PType	common/inc/common.h	/^    PTYPE   m_PType;        \/* 请求类型*\/$/;"	m	struct:Protocol
 m_busyIdx	server/src/TaskThread.h	/^    int m_busyIdx;              \/* 繁忙任务链表下标*\/$/;"	m	class:TaskThread
 m_cond	client/src/AutoUpload.h	/^    Cond    m_cond;            \/* 条件变量*\/$/;"	m	class:AutoUpload
-m_cond	client/src/xiaoma.share/AutoUpload.h	/^    Cond    m_cond;            \/* 条件变量*\/$/;"	m	class:AutoUpload
 m_cond	common/inc/common.h	/^    pthread_cond_t  m_cond;$/;"	m	class:Cond
 m_cond	server/src/TaskThread.h	/^    Cond    m_cond;         \/* 条件变量*\/$/;"	m	class:TaskThread
 m_connQue	server/src/GroupManage.h	/^    queue<MYSQL*> m_connQue;  \/* 数据库连接队列*\/$/;"	m	class:GroupManage
@@ -218,15 +238,11 @@ m_fileFd	server/src/Task.h	/^    int       m_fileFd;     \/* 文件描述符*\/$
 m_fileMD5	common/inc/common.h	/^    char    m_fileMD5[ MD5_LENGTH ];     \/* 文件的MD5码*\/$/;"	m	struct:Protocol
 m_fileMode	client/src/UploadTask.h	/^    mode_t  m_fileMode;   \/* 文件权限*\/$/;"	m	struct:UploadTask
 m_fileMode	common/inc/common.h	/^    mode_t  m_fileMode;                  \/* 文件权限*\/$/;"	m	struct:Protocol
-m_fileMode	server/src/xiaoma.share/UploadTask.h	/^    mode_t  m_fileMode;   \/* 文件权限*\/$/;"	m	struct:UploadTask
 m_filePath	client/src/UploadTask.h	/^    char    m_filePath[ PATH_LENGTH ];  \/* 文件全路径名*\/$/;"	m	struct:UploadTask
 m_filePath	common/inc/common.h	/^    char    m_filePath[ PATH_LENGTH ];   \/* 文件路径*\/$/;"	m	struct:Protocol
-m_filePath	server/src/xiaoma.share/UploadTask.h	/^    char    m_filePath[ PATH_LENGTH ];  \/* 文件全路径名*\/$/;"	m	struct:UploadTask
 m_fileSize	client/src/UploadTask.h	/^    int64_t m_fileSize;   \/* 文件大小*\/$/;"	m	struct:UploadTask
-m_fileSize	server/src/xiaoma.share/UploadTask.h	/^    int64_t m_fileSize;   \/* 文件大小*\/$/;"	m	struct:UploadTask
 m_freeIdx	server/src/TaskThread.h	/^    int m_freeIdx;              \/* 空闲任务链表下标*\/$/;"	m	class:TaskThread
 m_groupID	client/src/AutoUpload.h	/^    int     m_groupID;                 \/* 所属组ID*\/$/;"	m	class:AutoUpload
-m_groupID	client/src/xiaoma.share/AutoUpload.h	/^    int     m_groupID;                 \/* 所属组ID*\/$/;"	m	class:AutoUpload
 m_groupID	common/inc/common.h	/^    int     m_groupID;      \/* 用户所属ID*\/$/;"	m	struct:Protocol
 m_groupID	common/inc/common.h	/^    int  m_groupID;                       \/* 所属组ID*\/$/;"	m	struct:UserInfo
 m_groupID	common/inc/common.h	/^    int  m_groupID;                  \/* 群组ID*\/$/;"	m	struct:GroupInfo
@@ -245,8 +261,6 @@ m_maxConnNum	server/src/UserManage.h	/^    int     m_maxConnNum;        \/* 最�
 m_maxLength	server/src/TaskThread.h	/^    int     m_maxLength;    \/* 线程的任务链表的最大长度*\/$/;"	m	class:TaskThread
 m_mutex	client/src/AutoUpload.h	/^    Mutex   m_mutex;           \/* 互斥锁*\/$/;"	m	class:AutoUpload
 m_mutex	client/src/Client.h	/^    Mutex m_mutex;          \/* 互斥锁*\/$/;"	m	class:Client
-m_mutex	client/src/xiaoma.share/AutoUpload.h	/^    Mutex   m_mutex;           \/* 互斥锁*\/$/;"	m	class:AutoUpload
-m_mutex	client/src/xiaoma.share/Client.h	/^    Mutex m_mutex;          \/* 互斥锁*\/$/;"	m	class:Client
 m_mutex	common/inc/common.h	/^    pthread_mutex_t  m_mutex;$/;"	m	class:Mutex
 m_mutex	common/inc/common.h	/^    pthread_mutex_t m_mutex;$/;"	m	class:Cond
 m_mutex	server/src/GroupManage.h	/^    Mutex  m_mutex;           \/* 互斥锁*\/$/;"	m	class:GroupManage
@@ -257,9 +271,8 @@ m_needSend	server/src/Task.h	/^    int       m_needSend;   \/* 需要读取的�
 m_pAutoUpload	client/src/AutoUpload.cpp	/^AutoUpload* AutoUpload::m_pAutoUpload = NULL;$/;"	m	class:AutoUpload	file:
 m_pAutoUpload	client/src/AutoUpload.h	/^    static AutoUpload *m_pAutoUpload;    \/* 自动上传类单例对象指针*\/$/;"	m	class:AutoUpload
 m_pAutoUpload	client/src/Client.h	/^    AutoUpload *m_pAutoUpload;       \/* 自动上传类对象*\/$/;"	m	class:Client
-m_pAutoUpload	client/src/xiaoma.share/AutoUpload.cpp	/^AutoUpload* AutoUpload::m_pAutoUpload = NULL;$/;"	m	class:AutoUpload	file:
-m_pAutoUpload	client/src/xiaoma.share/AutoUpload.h	/^    static AutoUpload *m_pAutoUpload;    \/* 自动上传类单例对象指针*\/$/;"	m	class:AutoUpload
-m_pAutoUpload	client/src/xiaoma.share/Client.h	/^    AutoUpload *m_pAutoUpload;       \/* 自动上传类对象*\/$/;"	m	class:Client
+m_pAutoUpload	server/src/wangjian.share/AutoUpload.cpp	/^AutoUpload* AutoUpload::m_pAutoUpload = NULL;$/;"	m	class:AutoUpload	file:
+m_pAutoUpload	server/src/xiwang.share/AutoUpload.cpp	/^AutoUpload* AutoUpload::m_pAutoUpload = NULL;$/;"	m	class:AutoUpload	file:
 m_pBigTaskPool	server/src/ThreadPool.cpp	/^ThreadPool* ThreadPool::m_pBigTaskPool = NULL;$/;"	m	class:ThreadPool	file:
 m_pBigTaskPool	server/src/ThreadPool.h	/^    static ThreadPool *m_pBigTaskPool;    \/* 大任务线程池单例对象*\/$/;"	m	class:ThreadPool
 m_pBigThrPool	server/src/MyThreadPool.h	/^    ThreadPool *m_pBigThrPool;  \/* 大任务线程池对象*\/$/;"	m	class:MyThreadPool
@@ -282,40 +295,30 @@ m_pUM	server/src/UserManage.h	/^    static UserManage *m_pUM;    \/* 用户管�
 m_port	server/src/Server.h	/^    int     m_port;             \/* 服务器监听端口*\/$/;"	m	class:Server
 m_prot	client/src/AutoUpload.h	/^    Protocol m_prot;           \/* 协议包*\/$/;"	m	class:AutoUpload
 m_prot	client/src/Client.h	/^    Protocol m_prot;        \/* 协议包*\/$/;"	m	class:Client
-m_prot	client/src/xiaoma.share/AutoUpload.h	/^    Protocol m_prot;           \/* 协议包*\/$/;"	m	class:AutoUpload
-m_prot	client/src/xiaoma.share/Client.h	/^    Protocol m_prot;        \/* 协议包*\/$/;"	m	class:Client
 m_prot	server/src/Task.h	/^    Protocol  m_prot;       \/* 该任务对象应处理的协议包*\/$/;"	m	class:Task
 m_pwd	client/src/Client.h	/^    char m_pwd[ PWD_LENGTH ];        \/* 密码*\/$/;"	m	class:Client
-m_pwd	client/src/xiaoma.share/Client.h	/^    char m_pwd[ PWD_LENGTH ];        \/* 密码*\/$/;"	m	class:Client
+m_rqs_PType	common/inc/common.h	/^    PTYPE   m_rqs_PType;        \/* 请求类型*\/$/;"	m	struct:Protocol
+m_rsp_PType	common/inc/common.h	/^    PTYPE   m_rsp_PType;        \/* 响应类型*\/$/;"	m	struct:Protocol
 m_scanThread	client/src/AutoUpload.h	/^    pthread_t  m_scanThread;      \/* 浏览目录线程*\/$/;"	m	class:AutoUpload
-m_scanThread	client/src/xiaoma.share/AutoUpload.h	/^    pthread_t  m_scanThread;      \/* 浏览目录线程*\/$/;"	m	class:AutoUpload
 m_sevIP	client/src/Client.h	/^    char m_sevIP[16];       \/* 服务端IP地址*\/$/;"	m	class:Client
-m_sevIP	client/src/xiaoma.share/Client.h	/^    char m_sevIP[16];       \/* 服务端IP地址*\/$/;"	m	class:Client
 m_sevPort	client/src/Client.h	/^    int  m_sevPort;         \/* 服务端端口*\/$/;"	m	class:Client
-m_sevPort	client/src/xiaoma.share/Client.h	/^    int  m_sevPort;         \/* 服务端端口*\/$/;"	m	class:Client
 m_sockFd	client/src/AutoUpload.h	/^    int      m_sockFd;         \/* 与服务端通信套接字描述符*\/$/;"	m	class:AutoUpload
 m_sockFd	client/src/Client.h	/^    int  m_sockFd;          \/* 客户端套接字描述符*\/$/;"	m	class:Client
-m_sockFd	client/src/xiaoma.share/AutoUpload.h	/^    int      m_sockFd;         \/* 与服务端通信套接字描述符*\/$/;"	m	class:AutoUpload
-m_sockFd	client/src/xiaoma.share/Client.h	/^    int  m_sockFd;          \/* 客户端套接字描述符*\/$/;"	m	class:Client
 m_sockFd	common/inc/common.h	/^    int     m_sockFd;       \/* 客户端套接字描述符*\/$/;"	m	struct:Protocol
 m_sockFd	server/src/Task.h	/^    int       m_sockFd;     \/* 与客户端通信套接字*\/$/;"	m	class:Task
 m_taskList	server/src/TaskThread.h	/^    list<Task*> m_taskList[2];  \/* 任务链表数组*\/$/;"	m	class:TaskThread
 m_tid	server/src/TaskThread.h	/^    pthread_t    m_tid;     \/* 线程id*\/$/;"	m	class:TaskThread
 m_uploadList	client/src/AutoUpload.h	/^    list< UploadTask*> m_uploadList;   \/* 文件上传链表*\/$/;"	m	class:AutoUpload
-m_uploadList	client/src/xiaoma.share/AutoUpload.h	/^    list< UploadTask*> m_uploadList;   \/* 文件上传链表*\/$/;"	m	class:AutoUpload
 m_uploadThread	client/src/AutoUpload.h	/^    pthread_t  m_uploadThread;    \/* 上传文件线程*\/$/;"	m	class:AutoUpload
-m_uploadThread	client/src/xiaoma.share/AutoUpload.h	/^    pthread_t  m_uploadThread;    \/* 上传文件线程*\/$/;"	m	class:AutoUpload
 m_userName	client/src/AutoUpload.h	/^    char    m_userName[ NAME_LENGTH ]; \/* 用户名*\/$/;"	m	class:AutoUpload
 m_userName	client/src/Client.h	/^    char m_userName[ NAME_LENGTH ];  \/* 用户名*\/$/;"	m	class:Client
-m_userName	client/src/xiaoma.share/AutoUpload.h	/^    char    m_userName[ NAME_LENGTH ]; \/* 用户名*\/$/;"	m	class:AutoUpload
-m_userName	client/src/xiaoma.share/Client.h	/^    char m_userName[ NAME_LENGTH ];  \/* 用户名*\/$/;"	m	class:Client
 m_userName	common/inc/common.h	/^    char    m_userName[ NAME_LENGTH ];   \/* 用户名*\/$/;"	m	struct:Protocol
 m_userName	common/inc/common.h	/^    char m_userName[ NAME_LENGTH ];       \/* 用户名*\/$/;"	m	struct:UserInfo
 m_userPwd	common/inc/common.h	/^    char m_userPwd[ PWD_LENGTH ];         \/* 密码*\/$/;"	m	struct:UserInfo
 main	client/src/main.cpp	/^int main(void)$/;"	f
-main	client/src/xiaoma.share/main.cpp	/^int main(void)$/;"	f
 main	server/src/main.cpp	/^int main(void)$/;"	f
-main	server/src/xiaoma.share/main.cpp	/^int main(void)$/;"	f
+main	server/src/wangjian.share/main.cpp	/^int main(void)$/;"	f
+main	server/src/xiwang.share/main.cpp	/^int main(void)$/;"	f
 needRecv	server/src/Server.cpp	/^    int needRecv;$/;"	m	struct:UserRequest	file:
 prot	server/src/Server.cpp	/^    Protocol  prot;$/;"	m	struct:UserRequest	file:
 setSocketNoneblocking	common/inc/common.h	/^    static void setSocketNoneblocking( int fd )$/;"	f	struct:Common
@@ -324,7 +327,8 @@ trylock	common/inc/common.h	/^    bool trylock()$/;"	f	class:Mutex
 unlock	common/inc/common.h	/^    bool unlock()$/;"	f	class:Mutex
 wait	common/inc/common.h	/^    bool wait()$/;"	f	class:Cond
 ~Client	client/src/Client.cpp	/^Client::~Client()                   $/;"	f	class:Client
-~Client	client/src/xiaoma.share/Client.cpp	/^Client::~Client()                   $/;"	f	class:Client
+~Client	server/src/wangjian.share/Client.cpp	/^Client::~Client()                   $/;"	f	class:Client
+~Client	server/src/xiwang.share/Client.cpp	/^Client::~Client()                   $/;"	f	class:Client
 ~Cond	common/inc/common.h	/^    ~Cond()$/;"	f	class:Cond
 ~Mutex	common/inc/common.h	/^    ~Mutex()$/;"	f	class:Mutex
 ~Server	server/src/Server.cpp	/^Server::~Server()$/;"	f	class:Server

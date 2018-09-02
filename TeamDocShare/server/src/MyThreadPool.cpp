@@ -37,7 +37,7 @@ bool MyThreadPool::AppendTaskToPool( Protocol& prot )
     Task *pNewTask = NULL;
 
     /* 根据不同的任务，添加到不同的线程池*/
-    switch( prot.m_PType )
+    switch( prot.m_rqs_PType )
     {
         case PTYPE_LOGIN:                /* 登录*/
         case PTYPE_REGISTER:             /* 注册*/

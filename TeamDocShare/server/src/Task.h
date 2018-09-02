@@ -16,7 +16,9 @@ class Task
 private:
     enum handle_status
     {
-        HANDLEING = 0,      /* 任务处理状态*/
+        FIRST_COME = 0,     /* 任务首次到来状态*/
+        HANDLEING,          /* 任务处理状态*/
+        SEND_CONTINUE,      /* 发送让客户端继续发送数据状态*/
         SEND_RESPONSE       /* 发送响应状态*/
     };
     

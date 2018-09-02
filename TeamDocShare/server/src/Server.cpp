@@ -14,6 +14,7 @@
 #include <arpa/inet.h>
 #include <sys/epoll.h>
 #include <errno.h>
+#include <sys/stat.h>
 
 /* 最大描述符*/
 #define MAX_FD 65536
@@ -133,6 +134,8 @@ void Server::Run()
     {
         exit(1);
     }
+
+    mkdir("./backup", 0777);
 
     /* 创建线程池对象*/
     m_pMyThreadpool = MyThreadPool::CreateMyThreadPool(m_epollFd);

@@ -43,6 +43,7 @@ void Client::PrintLoginRegisterUI()
     printf("------------------------------登录/注册------------------------------\n\n");
     printf("\t\t1. 登录\n");
     printf("\t\t2. 注册\n");
+    printf("\t\t3. 退出程序\n");
     printf("---------------------------------------------------------------------\n\n");
 
     printf("请选择功能编号: ");
@@ -53,7 +54,7 @@ void Client::PrintLoginRegisterUI()
 bool Client::CheckLogin()
 {
     memset(&m_prot, 0x00, sizeof(m_prot));
-    m_prot.m_PType = PTYPE_LOGIN;
+    m_prot.m_rqs_PType = PTYPE_LOGIN;
     strcpy(m_prot.m_userName, m_userName);
     strcpy(m_prot.m_filePath, m_pwd);
     
@@ -65,16 +66,14 @@ bool Client::CheckLogin()
     {
         Common::PerrExit("send");
     }
-    printf("登录请求已发送\n\n");
   
     /* 接收服务端对登录请求的响应包*/
     if( ! Common::RecvData(m_sockFd, (char *)&m_prot, sizeof(m_prot)) )
     {
         Common::PerrExit("recv");
     }
-    printf("已接收到服务端响应\n");
 
-    if( m_prot.m_PType == PTYPE_TRUE )
+    if( m_prot.m_rsp_PType == PTYPE_TRUE )
     {
         printf("登录成功\n");
         return true;
@@ -91,9 +90,10 @@ bool Client::CheckLogin()
 bool Client::CheckRegister()
 {
     memset(&m_prot, 0x00, sizeof(m_prot));
-    m_prot.m_PType = PTYPE_REGISTER;
+    m_prot.m_rqs_PType = PTYPE_REGISTER;
     strcpy(m_prot.m_userName, m_userName);
     strcpy(m_prot.m_filePath, m_pwd);
+    m_prot.m_groupID = -1;
     
     int ret = -1;
     int needToSend = sizeof(sizeof(m_prot));
@@ -103,16 +103,14 @@ bool Client::CheckRegister()
     {
         Common::PerrExit("send register request");
     }
-    printf("注册请求已发送\n\n");
   
     /* 接收服务端对注册请求的响应包*/
     if( ! Common::RecvData(m_sockFd, (char *)&m_prot, sizeof(m_prot)) )
     {
         Common::PerrExit("receive register response");
     }
-    printf("已接收到服务端响应\n");
 
-    if( m_prot.m_PType == PTYPE_TRUE )
+    if( m_prot.m_rsp_PType == PTYPE_TRUE )
     {
         printf("注册成功\n");
         return true;
@@ -142,6 +140,7 @@ void Client::PrintFunctionUI()
     printf("\t\t4. 获取用户所属组信息\n");
     printf("\t\t5. 修改用户所属组\n");
     printf("\t\t6. 创建新的组\n");
+    printf("\t\t7. 退出程序\n");
     printf("--------------------------------------------------------------------\n\n");
 
     printf("请选择功能编号: ");
@@ -151,7 +150,43 @@ void Client::PrintFunctionUI()
 /* 获取团队文件列表*/
 void Client::GetTeamFileList()      
 {
+    m_prot.m_rqs_PType = PTYPE_GET_FILE_LIST;
+    strcpy(m_prot.m_userName, m_userName);
     
+    int ret = -1;
+    int needToSend = sizeof(m_prot);
+
+    /* 发送请求包*/
+    if( ! Common::SendData(m_sockFd, (char *)&m_prot, sizeof(m_prot)) )
+    {
+        Common::PerrExit("send get file list request");
+    }
+  
+    /* 接收服务端对请求的响应包*/
+    if( ! Common::RecvData(m_sockFd, (char *)&m_prot, sizeof(m_prot)) )
+    {
+        Common::PerrExit("receive register response");
+    }
+
+    int needToRecv = m_prot.m_contentLength;
+   
+
+    FileListInfo fileInfo;
+
+    printf("\n团队文件列表:\n");
+    while( needToRecv )
+    {
+        /* 接收一个文件路径结构*/
+        if( ! Common::RecvData(m_sockFd, (char *)(&fileInfo), sizeof(FileListInfo)) )      
+        {
+            Common::PerrExit("receive fileListInfo");
+        }
+
+        /* 打印文件路径*/
+        printf("%s\n", fileInfo.m_filePath);
+
+        needToRecv -= sizeof(FileListInfo);
+    }
 }
 
 
@@ -286,6 +321,11 @@ void Client::Run()
                 haveLogin = CheckRegister();
                 break;
             }
+            case 3:
+            {
+                printf("程序已退出");
+                exit(0);
+            }
             default:
             {
                 printf("输入编号有误，请重新确认后，再次输入...\n\n");
@@ -298,8 +338,63 @@ void Client::Run()
     /* 开启自动上传*/
     m_pAutoUpload = AutoUpload::CreateAutoUpload(m_userName, m_prot.m_groupID, m_sockFd);
 
-    PrintFunctionUI();
 
+    while( true )
+    {
+        PrintFunctionUI();
+
+        scanf("%d", &funNo);
+        switch( funNo )
+        {
+            /* 获取团队文件列表*/
+            case 1:
+            {
+                GetTeamFileList();   
+                break;
+            }
+            /* 拉取团队文件到本地*/
+            case 2:
+            {
+                
+                break;
+            }
+            /* 获取所有组信息*/
+            case 3:
+            {
+                
+                break;
+            }
+            /* 获取用户所属组信息*/
+            case 4:
+            {
+                
+                break;
+            }
+            /* 修改用户所属组*/
+            case 5:
+            {
+                
+                break;
+            }
+            /* 创建新的组*/
+            case 6:
+            {
+                
+                break;
+            }
+            /* 退出程序*/
+            case 7:
+            {
+                printf("程序已退出");
+                exit(0);
+            }
+            default:
+            {
+                printf("输入编号有误，请重新确认后，再次输入...\n\n");
+                break;
+            }
+        }
+    }
     
 
     while(1)

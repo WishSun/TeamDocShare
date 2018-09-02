@@ -22,7 +22,7 @@
 using namespace std;
 
 /* 文件路径长度*/
-#define PATH_LENGTH 1024
+#define PATH_LENGTH 256
 
 /* 用户名/群组名长度*/
 #define NAME_LENGTH 50
@@ -34,7 +34,7 @@ using namespace std;
 #define MD5_LENGTH  33
 
 /* 信息长度, 包括错误信息以及群组简介*/
-#define TEXT_LENGTH 1024
+#define TEXT_LENGTH 256
 
 /* 套接字发送/接收数据长度*/
 #define SENDRECV_LENGTH 4096
@@ -57,13 +57,15 @@ enum PTYPE
     PTYPE_CHANGE_GROUP,         /* 更改所属组*/
     PTYPE_CREATE_GROUP,         /* 创建新组*/
     PTYPE_ERROR,                /* 出错的请求或处理*/
-    PTYPE_TRUE                  /* 正确的请求*/
+    PTYPE_TRUE,                 /* 正确的请求*/
+    PTYPE_CONTINUE,             /* 继续请求*/
 };
 
 /* 服务端与客户端通信协议类*/
 struct Protocol
 {
-    PTYPE   m_PType;        /* 请求类型*/
+    PTYPE   m_rqs_PType;        /* 请求类型*/
+    PTYPE   m_rsp_PType;        /* 响应类型*/
     int     m_sockFd;       /* 客户端套接字描述符*/
     char    m_userName[ NAME_LENGTH ];   /* 用户名*/
     int     m_groupID;      /* 用户所属ID*/
@@ -95,6 +97,12 @@ struct GroupInfo
     char m_groupName[ NAME_LENGTH ]; /* 群组名*/
     int  m_groupMemNum;              /* 群组成员数*/
     char m_groupInfo[ TEXT_LENGTH ]; /* 群组简介*/ 
+};
+
+/* 文件列表信息类*/
+struct FileListInfo
+{
+    char m_filePath[ PATH_LENGTH ];
 };
 
 
