@@ -20,6 +20,12 @@ private:
     Mutex m_mutex;          /* 互斥锁*/
     char m_userName[ NAME_LENGTH ];  /* 用户名*/
     char m_pwd[ PWD_LENGTH ];        /* 密码*/
+    
+    char m_shareDirent[ PATH_LENGTH ];  /* 共享目录*/
+    char m_localDirent[ PATH_LENGTH ];  /* 本地目录*/
+
+    char m_dwdPath[ PATH_LENGTH ];   /* 请求的服务器文件路径*/
+    char m_locPath[ PATH_LENGTH ];   /* 本地文件存储路径*/
     AutoUpload *m_pAutoUpload;       /* 自动上传类对象*/
 
 private:
@@ -30,14 +36,18 @@ private:
     void StartAutoUpload();      /* 开启自动上传功能，即开启浏览目录线程，开启上传线程*/
     void PrintFunctionUI();      /* 打印功能界面*/
     void GetTeamFileList();      /* 获取团队文件列表*/
-    void DownloadTeamFile(char *filePath);   /* 拉取团队文件到本地*/
+    void DownloadTeamFile();     /* 拉取团队文件到本地*/
+
+
     void GetAllGroupInfo();      /* 获取所有组信息*/
-    void CreateNewGroup( GroupInfo *pGroup );/* 创建新的组*/
+    bool CreateNewGroup( GroupInfo *pGroup );/* 创建新的组*/
     bool ChangeMyGroup(int gid); /* 更改所属组*/
     void GetMyGroupInfo();       /* 获取用户所属组信息*/
     
 
     void GetNameAndPwd(bool isRegister);     /* 从标准输入获取用户名和密码*/
+    void GetNewGroupInfo(GroupInfo *gInfo);  /* 从标准输入获取所创建新的组信息*/
+    void GetDownloadFilePath();  /* 从标准输入获取请求文件路径*/
 public:
     Client(char *ip, int port);  /* 构造函数*/
     ~Client();                   /* 析构函数*/

@@ -22,6 +22,7 @@ AutoUpload* AutoUpload::m_pAutoUpload = NULL;
 AutoUpload::AutoUpload(char *uName, int gid, int sockFd)
 {
     sprintf(m_userName, "%s", uName);
+    sprintf(m_shareDirent, "./%s.share", uName);
     m_groupID = gid;
     m_sockFd = sockFd;
 
@@ -167,24 +168,13 @@ void *AutoUpload::ScanDirent(void *arg)
 {
     AutoUpload *pAU = (AutoUpload*)arg;
 
-    /* 创建共享目录*/
-    char shareDirent[256] = {0};
-    sprintf(shareDirent, "./%s.share", pAU->m_userName);
-    if( mkdir(shareDirent, 0777) == -1 )
-    {
-        if( errno != EEXIST )
-        {
-            perror("mkdir");
-            exit(1);
-        }
-    }
 
     while( true )
     {
         while( true )
         {
             /* 浏览共享目录，将文件放入上传链表*/
-            ScanDirentCore(shareDirent, pAU);
+            ScanDirentCore(pAU->m_shareDirent, pAU);
 
             /* 如果没有文件，则睡1秒*/
             if( pAU->m_uploadList.empty() )
@@ -246,7 +236,7 @@ bool AutoUpload::UploadFileCore(AutoUpload *pAU, UploadTask *pUTask)
     FILE *fp = popen(cmd, "r");
     if( fp == NULL )
     {
-        printf("执行cmd错误");
+        printf("执行get MD5 cmd错误");
         Common::PerrExit("pepen md5sum"); 
     }
 
@@ -258,15 +248,12 @@ bool AutoUpload::UploadFileCore(AutoUpload *pAU, UploadTask *pUTask)
     }
     pclose(fp);
 
-
-    printf("发送文件请求\n");
     /* 发送上传文件请求包*/
     if( ! Common::SendData(pAU->m_sockFd, (char *)&pAU->m_prot, sizeof(m_prot)) )
     {
         Common::PerrExit("send upload file request");
     }
 
-    printf("接收上传请求的响应\n");
     /* 接收服务端对上传请求的响应*/
     if( ! Common::RecvData(pAU->m_sockFd, (char *)&pAU->m_prot, sizeof(m_prot)) )
     {
@@ -276,8 +263,7 @@ bool AutoUpload::UploadFileCore(AutoUpload *pAU, UploadTask *pUTask)
     /* 接收秒传*/
     if( pAU->m_prot.m_rsp_PType == PTYPE_TRUE )
     {
-        printf("秒传实现！\n");
-        printf("文件[%s]上传成功\n", pUTask->m_filePath);
+        printf("秒传实现！文件[%s]上传成功\n", pUTask->m_filePath);
 
         /* 将文件从本地删除*/
         unlink(pUTask->m_filePath);
@@ -320,7 +306,6 @@ bool AutoUpload::UploadFileCore(AutoUpload *pAU, UploadTask *pUTask)
     }
 
 
-    printf("接收文件上传响应\n");
     /* 接收服务端对上传文件的响应*/
     if( ! Common::RecvData(pAU->m_sockFd, (char *)&pAU->m_prot, sizeof(m_prot)) )
     {
@@ -329,7 +314,7 @@ bool AutoUpload::UploadFileCore(AutoUpload *pAU, UploadTask *pUTask)
 
     if( pAU->m_prot.m_rsp_PType == PTYPE_TRUE )
     {
-        printf("文件[%s]上传成功\n", pUTask->m_filePath);
+        printf("普通上传！文件[%s]上传成功\n", pUTask->m_filePath);
 
         close(fd);
 
@@ -364,7 +349,6 @@ void *AutoUpload::UploadFile(void *arg)
         for( ; !pAU->m_uploadList.empty(); )
         {
             UploadFileCore(pAU, *iter);
-            printf("删除结点, 还有[%d]个任务\n", (int)pAU->m_uploadList.size());
             
             delIter = iter;
             ++iter;

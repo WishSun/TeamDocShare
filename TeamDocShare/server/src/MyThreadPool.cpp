@@ -70,14 +70,19 @@ bool MyThreadPool::AppendTaskToPool( Protocol& prot )
                 /* 文件不存在*/
                 if(access(prot.m_filePath, F_OK) != 0)
                 {
-                    return false;
+                    prot.m_rsp_PType = PTYPE_ERROR;
+                    prot.m_contentLength = 0;
                 }
 
-                /* 获取文件属性*/
-                struct stat st;
-                stat(prot.m_filePath, &st);
-                prot.m_contentLength = st.st_size;
-
+                else
+                {
+                    /* 获取文件属性*/
+                    struct stat st;
+                    stat(prot.m_filePath, &st);
+                    prot.m_contentLength = st.st_size;
+                    prot.m_fileMode = st.st_mode;
+                }
+               
                 pNewTask = new Task(prot);
 
                 /* 大于50MB的为大任务*/

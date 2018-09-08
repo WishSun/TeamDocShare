@@ -18,8 +18,11 @@ class AutoUpload
 {
 private:
     list< UploadTask*> m_uploadList;   /* 文件上传链表*/
+    char m_shareDirent[ PATH_LENGTH ]; /* 共享目录*/
+
     pthread_t  m_scanThread;      /* 浏览目录线程*/
     pthread_t  m_uploadThread;    /* 上传文件线程*/
+
     Mutex   m_mutex;           /* 互斥锁*/
     Cond    m_cond;            /* 条件变量*/
     char    m_userName[ NAME_LENGTH ]; /* 用户名*/
@@ -31,7 +34,7 @@ private:
 
 private:
     AutoUpload(char *uName, int gid, int sockFd);   /* 构造函数*/
-    static void ScanDirentCore( char *shareDirent, AutoUpload* pAU );   /* 浏览共享目录，将共享目录中文件放入上传链表中*/
+    static void ScanDirentCore(char *shareDirent, AutoUpload* pAU );   /* 浏览共享目录，将共享目录中文件放入上传链表中*/
     static void CheckFileOccupied(AutoUpload *pAU); /* 检查上传文件链表中的文件是否被占用，如果被占用则剔除*/
     static bool UploadFileCore(AutoUpload *pAU, UploadTask *pUTask);   /* 上传单个文件任务*/
 

@@ -141,6 +141,7 @@ void* TaskThread::Run(void *arg)
         /* 执行任务期间出错，则关闭套接字，删除任务结点*/
         else
         {
+            printf("关闭套接字\n");
             delIter = iter;       
             ++iter;
 

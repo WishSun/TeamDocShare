@@ -33,7 +33,7 @@ using namespace std;
 /* md5码长度*/
 #define MD5_LENGTH  33
 
-/* 信息长度, 包括错误信息以及群组简介*/
+/* 文本长度*/
 #define TEXT_LENGTH 256
 
 /* 套接字发送/接收数据长度*/
@@ -42,12 +42,22 @@ using namespace std;
 /* IP地址长度*/
 #define IP_LENGTH 16
 
+/* 数据库连接队列初始长度*/
+#define INIT_NUM   20
+
+/* 数据库连接队列最大长度*/
+#define MAX_NUM    100
+
+/* 数据库连接不够时，每次增加的数目*/
+#define APPEND_NUM 10
+
 typedef void*(* handle_t )(void*);
 
 /* 客户端请求类型*/
 enum PTYPE
 {
-    PTYPE_UPLOAD_FILE = 0,      /* 上传文件*/
+    PTYPE_INIT = 0,             /* 初始化类型*/
+    PTYPE_UPLOAD_FILE,          /* 上传文件*/
     PTYPE_DOWNLOAD_FILE,        /* 下载文件*/
     PTYPE_LOGIN,                /* 登录*/
     PTYPE_REGISTER,             /* 注册*/
@@ -76,7 +86,9 @@ struct Protocol
 
     Protocol()
     : m_sockFd(-1), m_groupID(-1), m_contentLength(0)
-    {}
+    {
+        m_rqs_PType = m_rsp_PType = PTYPE_INIT;
+    }
 };
 
 /* 用户信息类*/
@@ -185,11 +197,13 @@ struct Common
                 {
                     continue;
                 }
+                printf("返回值为-1\n");
                 return false;
             }
 
             if( ret == 0  )
             {
+                printf("返回值为0\n");
                 return false;
             }
 

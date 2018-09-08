@@ -9,30 +9,29 @@
 #define _GROUPMANAGE_H
 
 #include "../../common/inc/common.h"
+#include "./MysqlConn.h"
 #include <mysql/mysql.h>
 #include <queue>
+#include <list>
 using namespace std;
 
 class GroupManage
 {
 private:
+    char sql[ TEXT_LENGTH ];     /* sql语句缓冲区*/
+
     static GroupManage  *m_pGM;  /* 群组管理类对象单例指针*/
 
-    queue<MYSQL*> m_connQue;  /* 数据库连接队列*/
-    int    m_maxConnNum;      /* 最大支持的数据库连接数*/
-    Mutex  m_mutex;           /* 互斥锁*/
-
+    MysqlConn m_sqlConn;         /* 数据库连接对象*/
+   
 private:
-    GroupManage(int initNum, int maxNum);   /* 构造函数*/
-
-    MYSQL* AllocConn();                 /* 获取一个数据库连接*/
-    void FreeConn(MYSQL *pMysql);       /* 归还一个数据库连接*/
+    GroupManage();               /* 构造函数*/
 
 public:
     static GroupManage* CreateGroupManage();   /* 获取群组管理类单例对象*/
 
     bool AddNewGroup(GroupInfo *pG);    /* 增加一个新的组*/
-    GroupInfo* GetGroupList();          /* 查找所有群组信息*/
+    bool GetGroupList(list<GroupInfo>& groupList);                             /* 查找所有群组信息*/
 };
 
 

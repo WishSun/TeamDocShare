@@ -74,6 +74,10 @@ bool Task::HandleUploadFile()
                 {
                     return false;
                 }
+                else
+                {
+                    break;
+                }
             }
             m_needSend -= ret;
             m_haveSend += ret;
@@ -105,8 +109,10 @@ bool Task::HandleUploadFile()
                 {
                     return false;
                 }
-                m_isFinish = false;
-                break;
+                else
+                {
+                    break;
+                }
             }
 
             /* 将读到的数据写入文件*/
@@ -162,6 +168,10 @@ bool Task::HandleUploadFile()
                 {
                     return false;
                 }
+                else
+                {
+                    break;    
+                }
             }
             m_needSend -= ret;
             m_haveSend += ret;
@@ -180,7 +190,113 @@ bool Task::HandleUploadFile()
 /* 处理用户下载文件任务*/
 bool Task::HandleDownloadFile()
 {
-    /* 如果文件存在，需检验用户给的文件路径名，是不是他团队成员的文件, 不是则无访问权限*/
+    switch( m_handle_status )
+    {
+        /* 第一次到来*/
+        case FIRST_COME:
+        {
+            /* 是否在添加任务时，就已标注该文件不存在*/
+            if( m_prot.m_rsp_PType == PTYPE_ERROR )
+            {
+                m_handle_status = SEND_RESPONSE;
+                m_needSend = sizeof(m_prot);
+                m_haveSend = 0;
+            }
+            else
+            {
+                /* 打开文件获取文件大小, 迁移至发送继续回应状态*/
+                m_handle_status = SEND_RESPONSE;
+                m_prot.m_rsp_PType = PTYPE_CONTINUE;
+                m_needSend = sizeof(m_prot);
+                m_haveSend = 0;
+            }
+            break;
+        }
+        
+        /* 处理状态*/
+        case HANDLEING:
+        {
+            if( m_fileFd == -1 )
+            {
+                /* 打开文件*/
+                m_fileFd = open(m_prot.m_filePath, O_RDONLY);
+                if( m_fileFd == -1 )
+                {
+                    m_handle_status = SEND_RESPONSE;
+                    m_prot.m_rsp_PType = PTYPE_ERROR;
+                    break;
+                }
+            }
+           
+            int ret;
+
+            /* 说明缓冲区没数据可发，需要读取新的数据发送*/
+            if( m_bufNeedDeal == m_bufHaveDeal )
+            {
+                /* 读取文件数据, 只读一次*/
+                int dealBytes = m_needSend > SENDRECV_LENGTH ? SENDRECV_LENGTH : m_needSend;
+                if( (ret = read(m_fileFd, m_buf, dealBytes)) < 0 )
+                {
+                    m_handle_status = SEND_RESPONSE;
+                    m_prot.m_rsp_PType = PTYPE_ERROR;
+                    break;
+                }
+
+                m_bufNeedDeal = ret;
+                m_bufHaveDeal = 0;
+            }
+           
+            /* 发送给客户端*/
+            if( (ret = write(m_sockFd, m_buf + m_bufHaveDeal, m_bufNeedDeal - m_bufHaveDeal)) < 0 )
+            {
+                close(m_fileFd);
+                return false;
+            }
+
+            m_bufHaveDeal += ret;
+            m_needSend -= ret;
+
+            /* 如果文件数据发送完毕*/
+            if( m_needSend == 0 )
+            {
+                m_isFinish = true;
+                close(m_fileFd);
+            }
+            break;
+        }
+
+        /* 发送响应状态*/
+        case SEND_RESPONSE:
+        {
+            int ret = write(m_sockFd, (char *)&m_prot + m_haveSend, m_needSend);
+            if( ret == -1 )
+            {
+                if( errno != EAGAIN && errno != EWOULDBLOCK )
+                {
+                    return false;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            m_needSend -= ret;
+            m_haveSend += ret;
+
+            /* 中间响应发送完毕后，迁移至处理状态，发送文件数据*/
+            if( m_needSend == 0 )
+            {
+                m_handle_status = HANDLEING;
+                m_needSend = m_prot.m_contentLength;
+                m_haveSend = 0;
+            }
+
+            break;
+        }
+        default: return false;
+    }
+
+    return true;
 }
 
 
@@ -218,6 +334,10 @@ bool Task::HandleUserLogin()
             if( errno != EAGAIN && errno != EWOULDBLOCK )
             {
                 return false;
+            }
+            else
+            {
+                return true;
             }
         }
 
@@ -277,6 +397,10 @@ bool Task::HandleUserRegister()
             if( errno != EAGAIN && errno != EWOULDBLOCK )
             {
                 return false;
+            }
+            else
+            {
+                return true;
             }
         }
 
@@ -348,6 +472,10 @@ bool Task::HandleGetFileList()
                 {
                     return false;
                 }
+                else
+                {
+                    break;
+                }
             }
             m_needSend -= ret;
             m_haveSend += ret;
@@ -367,11 +495,18 @@ bool Task::HandleGetFileList()
         {
             int sendLen = m_needSend > SENDRECV_LENGTH ? SENDRECV_LENGTH : m_needSend;
             int ret = write(m_sockFd, pList + m_haveSend, sendLen);
-            if( (ret == -1) && (errno != EAGAIN) && (errno != EWOULDBLOCK) )
+            if( ret == -1 )
             {
-                perror("write");
-                return false;
+                if( errno != EAGAIN && errno != EWOULDBLOCK )
+                {
+                    return false;
+                }
+                else
+                {
+                    break;
+                }
             }
+           
             m_needSend -= ret;
             m_haveSend += ret;    
 
@@ -393,7 +528,105 @@ bool Task::HandleGetFileList()
 /* 处理获取群组列表任务*/
 bool Task::HandleGetGroupList()
 {
-    
+    static char *pList = NULL;
+    static list<GroupInfo> groupList;
+
+    switch( m_handle_status )
+    {
+        case FIRST_COME:
+        {
+            m_pGM->GetGroupList(groupList);
+
+            int listLen = groupList.size() * sizeof(GroupInfo);
+            pList = (char *)malloc( listLen );
+
+            char *pL = pList;
+            list<GroupInfo>::iterator iter = groupList.begin();
+
+            GroupInfo f;
+            while( iter != groupList.end() )
+            {
+                f = *iter;
+                memcpy(pL, (char*)&f, sizeof(GroupInfo));
+                pL += sizeof(GroupInfo);
+                iter++;
+            }
+
+            groupList.clear();
+
+            /* 构建继续请求响应包*/
+            m_prot.m_contentLength = listLen;
+            m_prot.m_rsp_PType = PTYPE_CONTINUE;
+
+            /* 状态迁移*/
+            m_handle_status = SEND_CONTINUE;
+            m_needSend = sizeof(m_prot);
+            m_haveSend = 0;
+
+            m_isFinish = false;
+
+            break;
+        }
+        case SEND_CONTINUE:
+        {
+            int ret = write(m_sockFd, (char *)&m_prot + m_haveSend, m_needSend);
+            if( ret == -1 )
+            {
+                if( errno != EAGAIN && errno != EWOULDBLOCK )
+                {
+                    return false;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            m_needSend -= ret;
+            m_haveSend += ret;
+
+            /* 响应包发送完毕，状态迁移*/
+            if( m_needSend == 0 )
+            {
+                m_handle_status = HANDLEING;
+                m_needSend = m_prot.m_contentLength;
+                m_haveSend = 0;
+            }
+
+            m_isFinish = false;
+            break;
+        }
+        case HANDLEING:
+        {
+            int sendLen = m_needSend > SENDRECV_LENGTH ? SENDRECV_LENGTH : m_needSend;
+            int ret = write(m_sockFd, pList + m_haveSend, sendLen);
+
+            if( ret == -1 )
+            {
+                if( errno != EAGAIN && errno != EWOULDBLOCK )
+                {
+                    return false;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            
+            m_needSend -= ret;
+            m_haveSend += ret;    
+
+            if( m_needSend == 0 )
+            {
+                free(pList);
+                pList = NULL;
+                m_isFinish = true;
+            }
+            break;
+        }
+        default: return false;
+    }
+
+    return true;
 }
 
 
@@ -414,7 +647,74 @@ bool Task::HandleChangeGroup()
 /* 处理用户创建新群组任务*/
 bool Task::HandleCreateGroup()
 {
-    
+    switch( m_handle_status )
+    {
+        case FIRST_COME:
+        {
+            /* 接收组信息*/
+            m_needRecv = m_prot.m_contentLength;
+            m_haveRecv = 0;
+
+            /* 状态迁移*/
+            m_handle_status = HANDLEING;
+        }
+        case HANDLEING:
+        {
+            int ret = read(m_sockFd, (char *)&m_groupInfo + m_haveRecv, m_needRecv);
+            if( ret == -1 )
+            {
+                if( errno != EAGAIN && errno != EWOULDBLOCK )
+                {
+                    return false;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            m_needRecv -= ret;
+            m_haveRecv += ret;
+
+            /* 新的组信息已接收完毕, 然后将其添加至数据库*/
+            if( m_needRecv == 0 )
+            {
+                if( ! m_pGM->AddNewGroup(&m_groupInfo) )
+                {
+                    m_prot.m_rsp_PType = PTYPE_ERROR;
+                }
+                else
+                {
+                    m_prot.m_rsp_PType = PTYPE_TRUE;
+                }
+                m_handle_status = SEND_RESPONSE;
+                m_needSend = sizeof(m_prot);
+                m_haveSend = 0;
+            }
+            break;
+        }
+        case SEND_RESPONSE:
+        {
+            int ret = write(m_sockFd, (char *)&m_prot + m_haveSend, m_needSend);
+            if( ret == -1 )
+            {
+                if( errno != EAGAIN && errno != EWOULDBLOCK )
+                {
+                    return false;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            m_needSend -= ret;
+            m_haveSend += ret;
+
+            m_isFinish = (m_needSend == 0);
+            break;
+        }
+        default: return false;
+    }
+    return true;
 }
 
 
@@ -425,6 +725,7 @@ Task::Task(const Protocol& prot)
     :m_prot(prot), m_isFinish(false), m_fileFd(-1), m_sockFd(prot.m_sockFd), m_needSend(-1), m_haveSend(0), m_needRecv(-1),m_haveRecv(0)
 {
     m_handle_status = FIRST_COME;
+    m_bufNeedDeal = m_bufHaveDeal = 0;
 
     m_pUM = UserManage::CreateUserManage();
     m_pGM = GroupManage::CreateGroupManage();

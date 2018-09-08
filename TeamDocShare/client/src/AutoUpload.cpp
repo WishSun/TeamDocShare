@@ -22,6 +22,7 @@ AutoUpload* AutoUpload::m_pAutoUpload = NULL;
 AutoUpload::AutoUpload(char *uName, int gid, int sockFd)
 {
     sprintf(m_userName, "%s", uName);
+    sprintf(m_shareDirent, "./%s.share", uName);
     m_groupID = gid;
     m_sockFd = sockFd;
 
@@ -167,24 +168,13 @@ void *AutoUpload::ScanDirent(void *arg)
 {
     AutoUpload *pAU = (AutoUpload*)arg;
 
-    /* 创建共享目录*/
-    char shareDirent[256] = {0};
-    sprintf(shareDirent, "./%s.share", pAU->m_userName);
-    if( mkdir(shareDirent, 0777) == -1 )
-    {
-        if( errno != EEXIST )
-        {
-            perror("mkdir");
-            exit(1);
-        }
-    }
 
     while( true )
     {
         while( true )
         {
             /* 浏览共享目录，将文件放入上传链表*/
-            ScanDirentCore(shareDirent, pAU);
+            ScanDirentCore(pAU->m_shareDirent, pAU);
 
             /* 如果没有文件，则睡1秒*/
             if( pAU->m_uploadList.empty() )

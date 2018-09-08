@@ -36,6 +36,11 @@ private:
     
     handle_status m_handle_status; /* 任务处理状态*/
 
+    GroupInfo m_groupInfo;  /* 组信息*/
+
+    char      m_buf[ SENDRECV_LENGTH ];  /* 缓冲区*/
+    int       m_bufNeedDeal;             /* 缓冲区需要处理的字节数*/
+    int       m_bufHaveDeal;             /* 缓冲区已经处理的字节数*/
     
     UserManage  *m_pUM;  /* 用户管理类单例对象*/
     GroupManage *m_pGM;  /* 群组管理类单例对象*/

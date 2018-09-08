@@ -18,95 +18,11 @@
 UserManage* UserManage::m_pUM = NULL;
 
 /* 用户管理类构造函数*/
-UserManage::UserManage(int initNum, int maxNum)
+UserManage::UserManage()
 {
-    MYSQL *p_mysql = NULL;
 
-    for(int i = 0; i < initNum; i++)
-    {
-        p_mysql = mysql_init(NULL);   
-        assert( p_mysql != NULL );
-
-        /* 连接数据库服务器*/
-        assert(mysql_real_connect(p_mysql, "127.0.0.1", "root", "123456", NULL, 0, NULL, 0) != NULL);
-
-        /* 选择数据库*/
-        assert(mysql_select_db(p_mysql, "TeamDocShare") == 0 );
-
-        /* 数据库连接句柄添加到连接队列*/
-        m_connQue.push(p_mysql);
-    }
 }
 
-
-/* 从数据库连接队列申请一个连接*/
-MYSQL* UserManage::AllocConn()
-{
-    m_mutex.lock();
-
-    MYSQL* p_mysql = m_connQue.front();
-    m_connQue.pop();
-
-    m_mutex.unlock();
-
-    return p_mysql;
-}
-
-
-/* 将一条数据库连接归还队列*/ 
-void UserManage::FreeConn(MYSQL *pMysql)
-{
-    m_mutex.lock();
-
-    m_connQue.push(pMysql);
-
-    m_mutex.unlock();
-}
-
-
-/* 执行插入sql语句, 如果p_mysql不为NULL，则使用该
- * 连接，用完之后不释放;如果为NULL，则申请数据库连
- * 接用完之后释放
- */
-bool UserManage::ExecuteInsertSql(MYSQL *p_mysql, char *sql)
-{
-    int flag = false;
-    if( p_mysql == NULL )
-    {
-        flag = true;
-
-        /* 获取一条数据库连接*/
-        p_mysql = AllocConn();
-    }
-
-    /* 执行sql语句*/
-    if( mysql_query(p_mysql, sql) != 0 )
-    {
-        printf("query sql error: %s\n", mysql_error(p_mysql));
-
-        if( flag )
-        {
-            /* 归还数据库连接*/
-            FreeConn(p_mysql);
-        }
-        return false;
-    }
-
-    /* 获取插入新用户影响的行数*/
-    int num = mysql_affected_rows(p_mysql);
- 
-    if( flag )
-    {
-        FreeConn(p_mysql);
-    }
-
-    if( num != 1 )
-    {
-        return false;
-    }
-
-    return true;   
-}
 
 
 /*----------------------------------public----------------------------------*/
@@ -116,7 +32,7 @@ UserManage* UserManage::CreateUserManage()
 {
     if(m_pUM == NULL)
     {
-        m_pUM = new UserManage(INIT_NUM, MAX_NUM);
+        m_pUM = new UserManage();
     }
 
     return m_pUM;
@@ -126,13 +42,7 @@ UserManage* UserManage::CreateUserManage()
 /* 析构函数*/
 UserManage::~UserManage()
 {
-    /* 释放所有数据库连接*/
-    while( !m_connQue.empty() )
-    {
-        MYSQL* p_mysql = m_connQue.front();
-        mysql_close(p_mysql);
-        m_connQue.pop();
-    }
+
 }
 
 
@@ -142,7 +52,7 @@ bool UserManage::FindUser(UserInfo *pUser)
     char sql[1024] = {0};
 
     /* 获取一条数据库连接*/
-    MYSQL *p_mysql = AllocConn();
+    MYSQL *p_mysql = m_sqlConn.AllocConn();
 
     sprintf(sql, "select groupID from userInfo where userName='%s' and userPassword='%s';", pUser->m_userName, pUser->m_userPwd);
 
@@ -151,7 +61,7 @@ bool UserManage::FindUser(UserInfo *pUser)
     {
         printf("query sql error: %s\n", mysql_error(p_mysql));
 
-        FreeConn(p_mysql);
+        m_sqlConn.FreeConn(p_mysql);
         return false;
     }
 
@@ -161,7 +71,7 @@ bool UserManage::FindUser(UserInfo *pUser)
     {
         printf("store result error: %s\n", mysql_error(p_mysql));
         
-        FreeConn(p_mysql);
+        m_sqlConn.FreeConn(p_mysql);
         return false;
     }
 
@@ -175,7 +85,7 @@ bool UserManage::FindUser(UserInfo *pUser)
         mysql_free_result(p_res);
 
         /* 归还数据库连接*/
-        FreeConn(p_mysql);
+        m_sqlConn.FreeConn(p_mysql);
 
         return false;
     }
@@ -198,7 +108,7 @@ bool UserManage::FindUser(UserInfo *pUser)
     mysql_free_result(p_res);
 
     /* 归还数据库连接*/
-    FreeConn(p_mysql);
+    m_sqlConn.FreeConn(p_mysql);
 
     return true;
 }
@@ -211,7 +121,7 @@ bool UserManage::AddNewUser(UserInfo *pUser)
 
     sprintf(sql, "insert into userInfo(userName, userPassword) values('%s', '%s')", pUser->m_userName, pUser->m_userPwd);
 
-    return ExecuteInsertSql(NULL, sql);
+    return m_sqlConn.ExecuteInsertSql(NULL, sql);
 }
 
 
@@ -230,12 +140,12 @@ bool UserManage::ChangeUserGroupID(char *pName, int gid)
 
 
 /* 获取该用户的团队文件列表*/
-int  UserManage::GetFileList(char *pName, int gid, list<FileListInfo> &pFList) 
+bool  UserManage::GetFileList(char *pName, int gid, list<FileListInfo> &pFList) 
 {
     char sql[1024] = {0};
 
     /* 获取一条数据库连接*/
-    MYSQL *p_mysql = AllocConn();
+    MYSQL *p_mysql = m_sqlConn.AllocConn();
 
     if( gid != -1 )
     {
@@ -247,7 +157,7 @@ int  UserManage::GetFileList(char *pName, int gid, list<FileListInfo> &pFList)
         {
             printf("query sql error: %s\n", mysql_error(p_mysql));
 
-            FreeConn(p_mysql);
+            m_sqlConn.FreeConn(p_mysql);
             return false;
         }
 
@@ -257,7 +167,7 @@ int  UserManage::GetFileList(char *pName, int gid, list<FileListInfo> &pFList)
         {
             printf("store result error: %s\n", mysql_error(p_mysql));
 
-            FreeConn(p_mysql);
+            m_sqlConn.FreeConn(p_mysql);
             return false;
         }
 
@@ -292,7 +202,7 @@ int  UserManage::GetFileList(char *pName, int gid, list<FileListInfo> &pFList)
     {
         printf("query sql error: %s\n", mysql_error(p_mysql));
 
-        FreeConn(p_mysql);
+        m_sqlConn.FreeConn(p_mysql);
         return false;
     }
 
@@ -302,7 +212,7 @@ int  UserManage::GetFileList(char *pName, int gid, list<FileListInfo> &pFList)
     {
         printf("store result error: %s\n", mysql_error(p_mysql));
 
-        FreeConn(p_mysql);
+        m_sqlConn.FreeConn(p_mysql);
         return false;
     }
 
@@ -318,7 +228,7 @@ int  UserManage::GetFileList(char *pName, int gid, list<FileListInfo> &pFList)
     mysql_free_result(p_res);
 
     /* 归还数据库连接*/
-    FreeConn(p_mysql);
+    m_sqlConn.FreeConn(p_mysql);
 
     return true;
 }
@@ -330,7 +240,7 @@ bool UserManage::GetFilePathInMD5(char *pMD5, char *filePath)
     char sql[1024] = {0};
 
     /* 获取一条数据库连接*/
-    MYSQL *p_mysql = AllocConn();
+    MYSQL *p_mysql = m_sqlConn.AllocConn();
 
     sprintf(sql, "select filePath from md5Map where md5Value='%s';", pMD5);
 
@@ -347,7 +257,7 @@ bool UserManage::GetFilePathInMD5(char *pMD5, char *filePath)
     {
         printf("store result error: %s\n", mysql_error(p_mysql));
 
-        FreeConn(p_mysql);
+        m_sqlConn.FreeConn(p_mysql);
         return false;
     }
 
@@ -359,7 +269,7 @@ bool UserManage::GetFilePathInMD5(char *pMD5, char *filePath)
     {
         /* 释放结果集*/
         mysql_free_result(p_res);
-        FreeConn(p_mysql);
+        m_sqlConn.FreeConn(p_mysql);
         return false;
     }
 
@@ -383,12 +293,12 @@ bool UserManage::GetFilePathInMD5(char *pMD5, char *filePath)
         }
 
         mysql_free_result(p_res);
-        FreeConn(p_mysql);
+        m_sqlConn.FreeConn(p_mysql);
         return false;
     }
 
     mysql_free_result(p_res);
-    FreeConn(p_mysql);
+    m_sqlConn.FreeConn(p_mysql);
     return true;   
 }
 
@@ -399,7 +309,7 @@ bool UserManage::SetFilePathtoMD5Map(char *pMD5, char *filePath)
     char sql[1024] = {0};
 
     /* 获取一条数据库连接*/
-    MYSQL *p_mysql = AllocConn();
+    MYSQL *p_mysql = m_sqlConn.AllocConn();
 
     /* 首先删除原来的记录(如果文件被修改的话)*/
     sprintf(sql, "delete from md5Map where filePath='%s'", filePath);
@@ -411,10 +321,10 @@ bool UserManage::SetFilePathtoMD5Map(char *pMD5, char *filePath)
     /* 然后添加新的记录*/
     sprintf(sql, "insert into md5Map values('%s', '%s')", pMD5, filePath);
 
-    bool result = ExecuteInsertSql(p_mysql, sql);
+    bool result = m_sqlConn.ExecuteInsertSql(p_mysql, sql);
     
     /* 归还数据库连接*/
-    FreeConn(p_mysql);
+    m_sqlConn.FreeConn(p_mysql);
 
     return result; 
 }
@@ -428,5 +338,5 @@ bool UserManage::SetFilePathtoUserName(char *filePath, char *uName)
     /* 添加新的记录*/
     sprintf(sql, "insert into userFileMap values('%s', '%s')", uName, filePath);
     
-    return ExecuteInsertSql(NULL, sql);
+    return m_sqlConn.ExecuteInsertSql(NULL, sql);
 }
